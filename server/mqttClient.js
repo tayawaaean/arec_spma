@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 const mqttLogger = require('./utils/mqttLogger');
 const PumpData = require('./models/PumpData');
+const DeviceStatus = require('./models/DeviceStatus');
 require('dotenv').config();
 
 const client = mqtt.connect(process.env.MQTT_BROKER_URL, {
@@ -10,26 +11,49 @@ const client = mqtt.connect(process.env.MQTT_BROKER_URL, {
 
 client.on('connect', () => {
   mqttLogger.info('Connected to MQTT broker');
-  // Subscribe to all pumps (arec/pump1, arec/pump2, ...)
-  client.subscribe('arec/pump+', (err) => {
-    if (!err) mqttLogger.info('Subscribed to arec/pump+');
+  // Subscribe to all pump data and status topics
+  client.subscribe('arec/pump/+', (err) => {
+    if (!err) mqttLogger.info('Subscribed to arec/pump/+');
     else mqttLogger.error('Subscribe error', { error: err.message });
+  });
+  client.subscribe('arec/pump/+/status', (err) => {
+    if (!err) mqttLogger.info('Subscribed to arec/pump/+/status');
+    else mqttLogger.error('Subscribe error (status)', { error: err.message });
   });
 });
 
 client.on('message', async (topic, message) => {
   try {
-    const payload = JSON.parse(message.toString());
-    // Extract pump number from topic, e.g., "arec/pump2" -> 2
-    const match = topic.match(/pump(\d+)/);
-    const pumpNumber = match ? parseInt(match[1]) : null;
+    // Handle status messages
+    const statusMatch = topic.match(/^arec\/pump\/(\d+)\/status$/);
+    if (statusMatch) {
+      const pumpNumber = parseInt(statusMatch[1], 10);
+      const status = message.toString(); // "online" or "offline"
+      if (status === 'online' || status === 'offline') {
+        await DeviceStatus.findOneAndUpdate(
+          { pump: pumpNumber },
+          { status, updatedAt: new Date() },
+          { upsert: true, new: true }
+        );
+        mqttLogger.info('Pump status updated', { pump: pumpNumber, status, time: new Date().toISOString() });
+      } else {
+        mqttLogger.warn('Unknown status received', { pump: pumpNumber, status });
+      }
+      return;
+    }
+
+    // Handle telemetry data
+    const dataMatch = topic.match(/^arec\/pump\/(\d+)$/);
+    const pumpNumber = dataMatch ? parseInt(dataMatch[1], 10) : null;
 
     if (!pumpNumber) {
       mqttLogger.warn('Pump number not found in topic', { topic });
       return;
     }
 
-    // Save to DB
+    const payload = JSON.parse(message.toString());
+
+    // Save telemetry data
     const data = new PumpData({
       pump: pumpNumber,
       time: new Date(payload.time),
