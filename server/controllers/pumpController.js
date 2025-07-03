@@ -1,10 +1,16 @@
 const Pump = require('../models/Pump');
 const logger = require('../utils/logger');
+const { validationResult } = require('express-validator');
 
 // Add a new pump (admin/superadmin)
 exports.addPump = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const {
+      solarPumpNumber, // Now provided by user!
       model,
       power,
       acInputVoltage,
@@ -20,10 +26,6 @@ exports.addPump = async (req, res, next) => {
       timeInstalled,
       status
     } = req.body;
-
-    // Count current pumps to assign the next solarPumpNumber
-    const count = await Pump.countDocuments();
-    const solarPumpNumber = count + 1;
 
     const pump = await Pump.create({
       solarPumpNumber,
@@ -55,25 +57,24 @@ exports.addPump = async (req, res, next) => {
 
     res.status(201).json(pump);
   } catch (error) {
-    logger.error('Error adding pump', {
-      action: 'add',
-      error: error.message,
-      by: req.user?.username,
-      userType: req.user?.userType
-    });
+    // If duplicate solarPumpNumber
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.solarPumpNumber) {
+      return res.status(400).json({ message: "solarPumpNumber must be unique" });
+    }
+    logger.error('Error adding pump', { action: 'add', error: error.message, by: req.user?.username, userType: req.user?.userType });
     next(error);
   }
 };
 
 // Edit pump (admin/superadmin)
 exports.editPump = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
-    if ('solarPumpNumber' in req.body) {
-      // Prevent editing
-      return res.status(400).json({ message: "Solar Pump Number cannot be edited" });
-    }
     const updatedFields = { ...req.body, updatedBy: req.user.username };
-    const pump = await Pump.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+    const pump = await Pump.findByIdAndUpdate(req.params.id, updatedFields, { new: true, runValidators: true });
     if (!pump) {
       logger.warn('Pump not found for edit', {
         action: 'edit',
@@ -92,12 +93,10 @@ exports.editPump = async (req, res, next) => {
     });
     res.json(pump);
   } catch (error) {
-    logger.error('Error editing pump', {
-      action: 'edit',
-      error: error.message,
-      by: req.user?.username,
-      userType: req.user?.userType
-    });
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.solarPumpNumber) {
+      return res.status(400).json({ message: "solarPumpNumber must be unique" });
+    }
+    logger.error('Error editing pump', { action: 'edit', error: error.message, by: req.user?.username, userType: req.user?.userType });
     next(error);
   }
 };

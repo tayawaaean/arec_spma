@@ -8,6 +8,8 @@ const pumpRoutes = require('./routes/pump');
 const userRoutes = require('./routes/user');
 const authRoutes = require('./routes/auth');
 const pumpDataRoutes = require('./routes/pumpData');
+const deviceStatusRoutes = require('./routes/deviceStatus');
+const mqttCredentialRoutes = require('./routes/mqttCredential');
 
 const app = express();
 
@@ -19,6 +21,8 @@ app.use('/api/pumps', pumpRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/pumpdata', pumpDataRoutes);
+app.use('/api/devicestatus', deviceStatusRoutes);
+app.use('/api/mqtt-credentials', mqttCredentialRoutes);
 
 // Centralized Error Handler
 app.use((err, req, res, next) => {
@@ -31,6 +35,6 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));
-    require('./mqttClient'); // Connect MQTT only after DB is ready
+    require('./mqttClient').connectMqtt();
   })
   .catch((err) => logger.error('DB connection error:', { error: err.message }));
