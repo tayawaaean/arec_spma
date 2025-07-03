@@ -14,6 +14,8 @@ const mqttCredentialRoutes = require('./routes/mqttCredential');
 const exchangeRateRoutes = require('./routes/exchangeRate');
 const gasPriceRoutes = require('./routes/gasPrice');
 const phFuelPriceRoutes = require('./routes/phFuelPrice');
+const electricityPriceRoutes = require('./routes/electricityPrice');
+const userFuelPriceRoutes = require('./routes/userFuelPrice');
 
 const app = express();
 
@@ -30,6 +32,9 @@ app.use('/api/mqtt-credentials', mqttCredentialRoutes);
 app.use('/api/gasprice', gasPriceRoutes);
 app.use('/api/exchange-rate', exchangeRateRoutes);
 app.use('/api/fuelprice', phFuelPriceRoutes);
+app.use('/api/electricity-price', electricityPriceRoutes);
+app.use('/api/user-fuel-price', userFuelPriceRoutes);
+  
 
 
 // Centralized Error Handler
