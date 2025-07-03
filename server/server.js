@@ -16,6 +16,8 @@ const gasPriceRoutes = require('./routes/gasPrice');
 const phFuelPriceRoutes = require('./routes/phFuelPrice');
 const electricityPriceRoutes = require('./routes/electricityPrice');
 const userFuelPriceRoutes = require('./routes/userFuelPrice');
+const pumpDataAggregateRoutes = require('./routes/pumpDataAggregate');
+const savingsRoutes = require('./routes/savings');
 
 const app = express();
 
@@ -34,9 +36,10 @@ app.use('/api/exchange-rate', exchangeRateRoutes);
 app.use('/api/fuelprice', phFuelPriceRoutes);
 app.use('/api/electricity-price', electricityPriceRoutes);
 app.use('/api/user-fuel-price', userFuelPriceRoutes);
+app.use('/api/pump-data', pumpDataAggregateRoutes);
+app.use('/api/savings', savingsRoutes);
+
   
-
-
 // Centralized Error Handler
 app.use((err, req, res, next) => {
   logger.error('Unhandled error', { error: err.message, stack: err.stack });
