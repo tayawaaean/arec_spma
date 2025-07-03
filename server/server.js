@@ -18,6 +18,7 @@ const electricityPriceRoutes = require('./routes/electricityPrice');
 const userFuelPriceRoutes = require('./routes/userFuelPrice');
 const pumpDataAggregateRoutes = require('./routes/pumpDataAggregate');
 const savingsRoutes = require('./routes/savings');
+const pumpEfficiencyBaselineRoutes = require('./routes/pumpEfficiencyBaseline');
 
 const app = express();
 
@@ -38,7 +39,7 @@ app.use('/api/electricity-price', electricityPriceRoutes);
 app.use('/api/user-fuel-price', userFuelPriceRoutes);
 app.use('/api/pump-data', pumpDataAggregateRoutes);
 app.use('/api/savings', savingsRoutes);
-
+app.use('/api/pump-efficiency-baseline', pumpEfficiencyBaselineRoutes);
   
 // Centralized Error Handler
 app.use((err, req, res, next) => {
