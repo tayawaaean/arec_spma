@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const logger = require('./utils/logger');
 
+
 // Route imports
 const pumpRoutes = require('./routes/pump');
 const userRoutes = require('./routes/user');
@@ -10,6 +11,9 @@ const authRoutes = require('./routes/auth');
 const pumpDataRoutes = require('./routes/pumpData');
 const deviceStatusRoutes = require('./routes/deviceStatus');
 const mqttCredentialRoutes = require('./routes/mqttCredential');
+const exchangeRateRoutes = require('./routes/exchangeRate');
+const gasPriceRoutes = require('./routes/gasPrice');
+const phFuelPriceRoutes = require('./routes/phFuelPrice');
 
 const app = express();
 
@@ -23,6 +27,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pumpdata', pumpDataRoutes);
 app.use('/api/devicestatus', deviceStatusRoutes);
 app.use('/api/mqtt-credentials', mqttCredentialRoutes);
+app.use('/api/gasprice', gasPriceRoutes);
+app.use('/api/exchange-rate', exchangeRateRoutes);
+app.use('/api/fuelprice', phFuelPriceRoutes);
+
 
 // Centralized Error Handler
 app.use((err, req, res, next) => {
