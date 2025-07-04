@@ -1,6 +1,7 @@
 const Pump = require('../models/Pump');
 const logger = require('../utils/logger');
 const { validationResult } = require('express-validator');
+const reverseGeocode = require('../utils/reverseGeocode');
 
 // Add a new pump (admin/superadmin)
 exports.addPump = async (req, res, next) => {
@@ -10,7 +11,7 @@ exports.addPump = async (req, res, next) => {
   }
   try {
     const {
-      solarPumpNumber, // Now provided by user!
+      solarPumpNumber,
       model,
       power,
       acInputVoltage,
@@ -24,8 +25,16 @@ exports.addPump = async (req, res, next) => {
       lat,
       lng,
       timeInstalled,
-      status
+      status,
+      address // optional, can be partial or missing
     } = req.body;
+
+    let resolvedAddress = address || {};
+    // Autofetch address fields if not provided or incomplete
+    if (!address || !address.municipality || !address.region || !address.country) {
+      const geoAddress = await reverseGeocode(lat, lng);
+      resolvedAddress = { ...geoAddress, ...address };
+    }
 
     const pump = await Pump.create({
       solarPumpNumber,
@@ -43,6 +52,7 @@ exports.addPump = async (req, res, next) => {
       lng,
       timeInstalled,
       status,
+      address: resolvedAddress,
       createdBy: req.user.username,
       updatedBy: req.user.username
     });
@@ -57,7 +67,6 @@ exports.addPump = async (req, res, next) => {
 
     res.status(201).json(pump);
   } catch (error) {
-    // If duplicate solarPumpNumber
     if (error.code === 11000 && error.keyPattern && error.keyPattern.solarPumpNumber) {
       return res.status(400).json({ message: "solarPumpNumber must be unique" });
     }
@@ -73,7 +82,15 @@ exports.editPump = async (req, res, next) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const updatedFields = { ...req.body, updatedBy: req.user.username };
+    const { lat, lng, address } = req.body;
+    let updatedFields = { ...req.body, updatedBy: req.user.username };
+
+    // If address is missing or incomplete, autofetch it
+    if ((!address || !address.municipality || !address.region || !address.country) && lat && lng) {
+      const geoAddress = await reverseGeocode(lat, lng);
+      updatedFields.address = { ...geoAddress, ...address };
+    }
+
     const pump = await Pump.findByIdAndUpdate(req.params.id, updatedFields, { new: true, runValidators: true });
     if (!pump) {
       logger.warn('Pump not found for edit', {

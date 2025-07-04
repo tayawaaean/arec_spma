@@ -14,6 +14,13 @@ const pumpSchema = new mongoose.Schema({
   image: { type: String },
   lat: { type: Number, required: true },
   lng: { type: Number, required: true },
+  // New address subdocument
+  address: {
+    barangay: { type: String },
+    municipality: { type: String },
+    region: { type: String },
+    country: { type: String }
+  },
   timeInstalled: { type: Date, required: true },
   status: {
     type: String,

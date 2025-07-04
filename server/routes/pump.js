@@ -21,7 +21,12 @@ const pumpValidation = [
   body('lng').isNumeric(),
   body('timeInstalled').isISO8601(),
   body('status').optional().isIn(['active', 'inactive', 'warning']),
-  body('image').optional().isString()
+  body('image').optional().isString(),
+  // Address fields are optional, user can override reverse geocode result
+  body('address.barangay').optional().isString(),
+  body('address.municipality').optional().isString(),
+  body('address.region').optional().isString(),
+  body('address.country').optional().isString()
 ];
 
 // Add a pump (admin/superadmin only)
