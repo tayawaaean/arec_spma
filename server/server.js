@@ -1,8 +1,8 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet'); // <--- Add this line
 const mongoose = require('mongoose');
 const logger = require('./utils/logger');
-
 
 // Route imports
 const pumpRoutes = require('./routes/pump');
@@ -22,7 +22,7 @@ const pumpEfficiencyBaselineRoutes = require('./routes/pumpEfficiencyBaseline');
 
 const app = express();
 
-// Middleware
+app.use(helmet()); // <--- Place helmet before any other middleware that sends responses
 app.use(express.json());
 
 // Routes
@@ -40,7 +40,7 @@ app.use('/api/user-fuel-price', userFuelPriceRoutes);
 app.use('/api/pump-data', pumpDataAggregateRoutes);
 app.use('/api/savings', savingsRoutes);
 app.use('/api/pump-efficiency-baseline', pumpEfficiencyBaselineRoutes);
-  
+
 // Centralized Error Handler
 app.use((err, req, res, next) => {
   logger.error('Unhandled error', { error: err.message, stack: err.stack });
