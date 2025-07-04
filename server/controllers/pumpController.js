@@ -150,16 +150,36 @@ exports.deletePump = async (req, res, next) => {
   }
 };
 
-// List all pumps (any authenticated user)
+// List all pumps (any authenticated user) WITH PAGINATION AND FILTERING
 exports.listPumps = async (req, res, next) => {
   try {
-    const pumps = await Pump.find();
+    const { page = 1, limit = 20, ...filters } = req.query;
+    const q = {};
+    // Example filters: solarPumpNumber, model, status
+    if (filters.solarPumpNumber) q.solarPumpNumber = new RegExp(filters.solarPumpNumber, 'i');
+    if (filters.model) q.model = new RegExp(filters.model, 'i');
+    if (filters.status) q.status = filters.status;
+
+    const pumps = await Pump.find(q)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+    const total = await Pump.countDocuments(q);
+
     logger.info('Pump list viewed', {
       action: 'list',
       by: req.user.username,
-      userType: req.user.userType
+      userType: req.user.userType,
+      filter: filters,
+      page: Number(page),
+      limit: Number(limit)
     });
-    res.json(pumps);
+
+    res.json({
+      data: pumps,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+    });
   } catch (error) {
     logger.error('Error listing pumps', {
       action: 'list',

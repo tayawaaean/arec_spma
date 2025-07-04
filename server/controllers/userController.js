@@ -148,16 +148,36 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-// (Optional) List all users
+// (Optional) List all users WITH PAGINATION AND FILTERING
 exports.listUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password');
+    const { page = 1, limit = 20, ...filters } = req.query;
+    const q = {};
+    // Only allow filtering by username/userType for now
+    if (filters.username) q.username = new RegExp(filters.username, 'i');
+    if (filters.userType) q.userType = filters.userType;
+
+    const users = await User.find(q)
+      .select('-password')
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+    const total = await User.countDocuments(q);
+
     logger.info('User list viewed', {
       action: 'list',
       by: req.user.username,
-      userType: req.user.userType
+      userType: req.user.userType,
+      filter: filters,
+      page: Number(page),
+      limit: Number(limit)
     });
-    res.json(users);
+
+    res.json({
+      data: users,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+    });
   } catch (err) {
     logger.error('Error listing users', {
       action: 'list',

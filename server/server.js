@@ -44,7 +44,12 @@ app.use('/api/pump-efficiency-baseline', pumpEfficiencyBaselineRoutes);
 // Centralized Error Handler
 app.use((err, req, res, next) => {
   logger.error('Unhandled error', { error: err.message, stack: err.stack });
-  res.status(err.status || 500).json({ message: err.message || 'Server error' });
+  const status = err.status || 500;
+  res.status(status).json({
+    code: status,
+    message: err.message || 'Server error',
+    details: err.details || undefined,
+  });
 });
 
 // MongoDB Connection & Server Start
