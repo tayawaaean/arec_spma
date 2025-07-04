@@ -20,7 +20,8 @@ router.get('/', auth, authorize('superadmin'), userController.listUsers); // opt
 
 // Change password (all authenticated users)
 router.post('/change-password', auth, [
-  body('password').isString().isLength({ min: 6 })
+  body('oldPassword').isString().isLength({ min: 6 }).withMessage('oldPassword is required and must be at least 6 characters'),
+  body('newPassword').isString().isLength({ min: 6 }).withMessage('newPassword is required and must be at least 6 characters')
 ], userController.changePassword);
 
 module.exports = router;
