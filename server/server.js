@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
-const helmet = require('helmet'); // <--- Add this line
+const helmet = require('helmet');
+const cors = require('cors'); // <--- Add CORS
 const mongoose = require('mongoose');
 const logger = require('./utils/logger');
 
@@ -25,7 +26,14 @@ const pvwattsRoutes = require('./routes/pvwatts');
 
 const app = express();
 
-app.use(helmet()); // <--- Place helmet before any other middleware that sends responses
+app.use(helmet());
+
+// --- Add CORS middleware, before any routes ---
+app.use(cors({
+  origin: 'http://localhost:5173', // Allow only your frontend dev origin
+  credentials: true // Set to true if you use cookies or sessions (else remove)
+}));
+
 app.use(express.json());
 
 // Routes
