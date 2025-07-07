@@ -8,7 +8,6 @@ import {
   IconButton,
   Typography,
   Box,
-  Divider,
   Chip
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -17,32 +16,43 @@ import ListIcon from '@mui/icons-material/List';
 import DataUsageIcon from '@mui/icons-material/DataUsage';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard'; // For Overview
 
+// Add route property for each menu item
 const menuConfig = {
   superadmin: [
-    { text: 'Map Dashboard', icon: <MapIcon /> },
-    { text: 'Pump List', icon: <ListIcon /> },
-    { text: 'Datas', icon: <DataUsageIcon /> },
-    { text: 'User', icon: <PeopleIcon /> },
-    { text: 'Settings', icon: <SettingsIcon /> },
+    { text: 'Overview', icon: <DashboardIcon />, route: "/overview" },
+    { text: 'Map Dashboard', icon: <MapIcon />, route: "/dashboard" },
+    { text: 'Pump List', icon: <ListIcon />, route: "/pumps" },
+    { text: 'Datas', icon: <DataUsageIcon />, route: "/data" },
+    { text: 'User', icon: <PeopleIcon />, route: "/users" },
+    { text: 'Settings', icon: <SettingsIcon />, route: "/settings" },
   ],
   admin: [
-    { text: 'Map Dashboard', icon: <MapIcon /> },
-    { text: 'Pump List', icon: <ListIcon /> },
-    { text: 'Datas', icon: <DataUsageIcon /> },
-    { text: 'User', icon: <PeopleIcon /> },
-    { text: 'Settings', icon: <SettingsIcon /> },
+    { text: 'Overview', icon: <DashboardIcon />, route: "/overview" },
+    { text: 'Map Dashboard', icon: <MapIcon />, route: "/dashboard" },
+    { text: 'Pump List', icon: <ListIcon />, route: "/pumps" },
+    { text: 'Datas', icon: <DataUsageIcon />, route: "/data" },
+    { text: 'User', icon: <PeopleIcon />, route: "/users" },
+    { text: 'Settings', icon: <SettingsIcon />, route: "/settings" },
   ],
   user: [
-    { text: 'Map Dashboard', icon: <MapIcon /> },
-    { text: 'Pump List', icon: <ListIcon /> },
-    { text: 'Datas', icon: <DataUsageIcon /> },
-    { text: 'Settings', icon: <SettingsIcon /> },
+    { text: 'Overview', icon: <DashboardIcon />, route: "/overview" },
+    { text: 'Map Dashboard', icon: <MapIcon />, route: "/dashboard" },
+    { text: 'Pump List', icon: <ListIcon />, route: "/pumps" },
+    { text: 'Datas', icon: <DataUsageIcon />, route: "/data" },
+    { text: 'Settings', icon: <SettingsIcon />, route: "/settings" },
   ]
 };
 
+// Import useNavigate for routing
+import { useNavigate, useLocation } from "react-router-dom";
+
 export default function Sidebar({ open, onClose, userType = "admin" }) {
   const menu = menuConfig[userType] || menuConfig.user;
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <Drawer
       open={open}
@@ -67,25 +77,30 @@ export default function Sidebar({ open, onClose, userType = "admin" }) {
         </Typography>
       </Box>
       <List sx={{ mt: 2 }}>
-        {menu.map((item, idx) => (
+        {menu.map((item) => (
           <ListItem
             button
             key={item.text}
+            selected={location.pathname === item.route}
+            onClick={() => {
+              navigate(item.route);
+              onClose?.();
+            }}
             sx={{
               py: 1.5,
-              color: idx === 0 ? '#151c72' : undefined,
-              bgcolor: idx === 0 ? 'rgba(21,28,114,0.07)' : undefined,
-              borderLeft: idx === 0 ? '4px solid #151c72' : '4px solid transparent',
+              color: location.pathname === item.route ? '#151c72' : undefined,
+              bgcolor: location.pathname === item.route ? 'rgba(21,28,114,0.07)' : undefined,
+              borderLeft: location.pathname === item.route ? '4px solid #151c72' : '4px solid transparent',
               '&:hover': { bgcolor: 'rgba(21,28,114,0.04)' }
             }}
           >
-            <ListItemIcon sx={{ color: idx === 0 ? '#151c72' : '#222', minWidth: 36 }}>
+            <ListItemIcon sx={{ color: location.pathname === item.route ? '#151c72' : '#222', minWidth: 36 }}>
               {item.icon}
             </ListItemIcon>
             <ListItemText
               primary={item.text}
               primaryTypographyProps={{
-                fontWeight: idx === 0 ? 'bold' : 'medium',
+                fontWeight: location.pathname === item.route ? 'bold' : 'medium',
                 fontSize: 17,
               }}
             />
