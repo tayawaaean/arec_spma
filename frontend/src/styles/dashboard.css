@@ -1,0 +1,661 @@
+/* Dashboard Styles */
+.dashboard-card {
+    background-color: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(48, 54, 61, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.dashboard-header {
+    margin-bottom: 1.5rem;
+}
+
+.total-yield-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.stat-bar {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+.stat-bar-blue {
+    background-color: #3b82f6;
+}
+
+.stat-bar-green {
+    background-color: #10b981;
+}
+
+.stat-bar-yellow {
+    background-color: #f59e0b;
+}
+
+.month-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.month-card:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.month-card.bg-primary {
+    background-color: #3b82f6 !important;
+}
+
+.month-card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.weather-icon {
+    color: #94a3b8;
+    font-size: 2rem;
+}
+
+.temperature {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.monthly-button {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 5px;
+    padding: 5px 15px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.monthly-button:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.chart-container {
+    height: 300px;
+}
+
+.forecast-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.forecast-row .forecast-day {
+    flex: 1;
+    text-align: center;
+}
+
+.weather-details {
+    margin-top: 1.5rem;
+}
+
+.stat-card {
+    padding: 10px 15px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+}
+
+.quarter-navigation {
+    display: flex;
+    align-items: center;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.loading-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+.dashboard-controls button {
+    margin-left: 0.5rem;
+}
+
+/* Tooltip styling */
+.tooltip-inner {
+    background-color: #1f2937;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+/* Dashboard spacing fixes */
+.dashboard-container {
+    padding-bottom: 15px;
+}
+
+/* Set consistent card heights */
+.dashboard-card {
+    margin-bottom: 15px;
+    height: calc(100% - 15px);
+}
+
+/* Control chart container height */
+.chart-container {
+    height: 300px;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+/* Fix row spacing */
+.row+.row {
+    margin-top: 0;
+}
+
+/* Weather widget height control */
+.weather-widget {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Performance monitoring card */
+.performance-chart-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Monthly generation layout */
+.monthly-generation-card {
+    height: calc(100% - 15px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure content fills height */
+.h-100 {
+    height: 100%; }
+
+        /* Add these Solar Pump Map styles to your dashboard.css */
+    
+        /* Fix container height */
+        .h-100 {
+            height: 100% !important;
+        }
+    
+        .flex-fill {
+            flex: 1 1 auto;
+        }
+    
+        /* Map container */
+        .map-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    
+        /* Fix layout */
+        .dashboard-card {
+            margin-bottom: 15px;
+            height: calc(100% - 15px);
+        }
+    
+        /* Status indicators */
+        .status-indicator,
+        .region-indicator,
+        .activity-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    
+        /* Weather location cards */
+        .weather-location-card {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    
+        /* Activity feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    
+        .activity-item {
+            position: relative;
+        }
+    
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+    
+        .smaller {
+            font-size: 0.75rem;
+        }
+    
+        /* Map sidebar tabs */
+        .map-sidebar-tabs {
+            border-bottom: 0;
+        }
+    
+        .map-sidebar-tabs .nav-link {
+            border: none;
+            border-radius: 0;
+            padding: 0.5rem 1rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+    
+        .map-sidebar-tabs .nav-link.active {
+            background-color: transparent;
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+    
+        /* Custom popup styles for solar pumps */
+        .custom-popup .leaflet-popup-content-wrapper {
+            background-color: #1f2937;
+            color: #e2e8f0;
+            border-radius: 8px;
+        }
+    
+        .custom-popup .leaflet-popup-tip {
+            background-color: #1f2937;
+        }
+    
+        .solar-pump-popup {
+            min-width: 240px;
+            max-width: 300px;
+        }
+    
+        /* Search and filter styles */
+        .search-filter {
+            position: relative;
+        }
+    
+        .search-filter input {
+            padding-left: 40px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    
+        .search-filter .input-group-text {
+            color: #94a3b8;
+        }
+    
+        /* Fix for map layer control */
+        .leaflet-control-layers {
+            border-radius: 4px !important;
+            background-color: #1f2937 !important;
+            color: #e2e8f0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+    
+        .leaflet-control-layers-toggle {
+            background-color: #1f2937 !important;
+        }
+    
+        /* Progress bar specific to map */
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+    
+        /* Pump model cards */
+        .pump-model-card {
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+    
+        .pump-model-card:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    
+        /* Prevent extra space on the map page */
+        .pb-3 {
+            padding-bottom: 1rem !important;
+        }
+    
+        /* Fix for main container to use all available height */
+        .container-fluid {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 60px);
+            /* Adjust based on your header height */ }
+                /* Add these styles for real-time pump metrics */
+        
+                .real-time-metrics .metric-card {
+                    background-color: rgba(255, 255, 255, 0.05);
+                    transition: all 0.2s ease;
+                }
+        
+                .real-time-metrics .metric-card:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+        
+                /* Custom popup styles for solar pumps */
+                .custom-popup .leaflet-popup-content-wrapper {
+                    background-color: #1f2937;
+                    color: #e2e8f0;
+                    border-radius: 8px;
+                }
+        
+                .custom-popup .leaflet-popup-tip {
+                    background-color: #1f2937;
+                }
+        
+                .solar-pump-popup {
+                    min-width: 300px;
+                }
+        
+                /* Tab styles in popup */
+                .solar-pump-popup .nav-tabs {
+                    border-bottom-color: rgba(255, 255, 255, 0.1);
+                }
+        
+                .solar-pump-popup .nav-tabs .nav-link {
+                    color: #94a3b8;
+                    border: none;
+                }
+        
+                .solar-pump-popup .nav-tabs .nav-link.active {
+                    color: #3b82f6;
+                    background-color: transparent;
+                    border-bottom: 2px solid #3b82f6;
+                }
+        
+                /* PumpDetails page styles */
+                .spec-group h6 {
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    padding-bottom: 8px;
+                }
+        
+                .dashboard-card .table td {
+                    padding: 0.4rem 0.5rem;
+                    border-color: rgba(255, 255, 255, 0.05);
+                }
+        
+                .dashboard-card .text-muted {
+                    color: #94a3b8 !important;
+                }
+        
+                /* Performance charts */
+                .recharts-cartesian-axis-tick-value {
+                    fill: #94a3b8;
+                }
+        
+                .recharts-legend-item-text {
+                    color: #e2e8f0 !important; }
+                                        /* Add these styles for the daily totals section */
+                    
+                .daily-totals {
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 6px;
+                    transition: all 0.2s ease;
+                }
+
+                .daily-totals:hover {
+                    background-color: rgba(255, 255, 255, 0.05);
+                }
+
+                .real-time-metrics h6.text-muted {
+                    font-size: 0.85rem;
+                    letter-spacing: 0.5px;
+                    text-transform: uppercase;
+                }
+
+                /* Make date/time display more prominent */
+                .real-time-metrics .text-muted small {
+                    font-family: 'Courier New', monospace;
+                    letter-spacing: 0.5px; }
+
+            /* Add these styles for fullscreen map functionality */
+
+            /* Map container */
+            .map-container {
+                position: relative;
+                height: 100%;
+                width: 100%;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            /* Fullscreen map styling */
+            .fullscreen-map {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: 9999;
+                border-radius: 0;
+            }
+
+            /* Custom map controls */
+            .map-custom-controls {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+            }
+
+            .map-fullscreen-control {
+                background-color: white;
+                border: 2px solid rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .map-fullscreen-control:hover {
+                background-color: #f4f4f4;
+            }
+
+            /* Make the map container visible over other elements when in fullscreen mode */
+            .map-container.fullscreen-map .leaflet-control-container .leaflet-top,
+            .map-container.fullscreen-map .leaflet-control-container .leaflet-bottom {
+                z-index: 10000;
+            }
+
+            /* Ensure popups are visible in fullscreen mode */
+            .map-container.fullscreen-map .leaflet-popup {
+                z-index: 10001;
+            }
+
+            /* Adjust control positioning for fullscreen */
+            .map-container.fullscreen-map .map-custom-controls {
+                bottom: 30px;
+                right: 30px; }
+                                                        /* Updated table styling for Pump Management */
+.pump-management {
+    color: #e2e8f0;
+  }
+  
+  .pump-table-container {
+    background-color: #0a0a0c; /* Darker background */
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .pump-table {
+    margin-bottom: 0;
+    background-color: transparent;
+  }
+  
+  .pump-table thead {
+    background-color: rgba(255, 255, 255, 0.02); /* Very subtle header background */
+  }
+  
+  .pump-table th {
+    border-bottom: none;
+    color: #a0aec0; /* Light silver/gray for headers */
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 15px;
+  }
+  
+  .pump-table td {
+    border-top: 1px solid rgba(255, 255, 255, 0.03); /* Almost invisible borders */
+    border-bottom: none;
+    padding: 15px;
+    vertical-align: middle;
+    color: #ffffff; /* Pure white text for maximum contrast */
+  }
+  
+  .pump-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.02); /* Very subtle hover effect */
+  }
+  
+  /* Status badges */
+  .status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+  
+  .status-active {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+  
+  .status-inactive {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+  
+  .status-warning {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+  
+  /* Action buttons */
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: transparent;
+  }
+  
+  .edit-btn {
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .edit-btn:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border-color: #3b82f6;
+  }
+  
+  .delete-btn {
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+  
+  .delete-btn:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+  
+  /* Search and filter controls */
+  .search-input, .filter-select {
+    background-color: rgba(255, 255, 255, 0.03); /* Darker input background */
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+  }
+  
+  .search-input::placeholder {
+    color: #94a3b8;
+  }
+  
+  .search-input:focus, .filter-select:focus {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+  
+  .search-icon, .filter-icon {
+    background-color: rgba(255, 255, 255, 0.03); /* Darker icon background */
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+  }
+  
+  .add-pump-btn {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+  }
+  
+  .add-pump-btn:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+  }
+  
+  .location-icon {
+    color: #3b82f6;
+  }
+  
+  .no-results {
+    color: #94a3b8;
+    font-style: italic;
+  }
+  
+  /* Ensure app-wide dark theme consistency */
+  body, .content-wrapper, .main-content {
+    background-color: #0d111a; /* Darker app background */
+  }

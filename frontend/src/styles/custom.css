@@ -1,0 +1,851 @@
+/*===========================================================
+  THEME VARIABLES
+===========================================================*/
+:root {
+    /* Background Colors */
+    --body-bg: #0d1117;
+    /* Very dark blue/black for main background */
+    --card-bg: #161b22;
+    /* Dark blue for cards */
+    --sidebar-bg: #161b22;
+    /* Same as cards */
+    --header-bg: #161b22;
+    /* Same as cards */
+    --filter-bg: rgba(255, 255, 255, 0.08);
+    /* Lighter background for filters */
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    /* White for main text */
+    --text-secondary: #94a3b8;
+    /* Light grayish blue for secondary text */
+    --text-muted: #64748b;
+    /* Muted text color */
+
+    /* Accent Colors */
+    --blue-accent: #0066ff;
+    /* Bright blue for active elements */
+    --blue-hover: #0055d4;
+    /* Darker blue for hover states */
+    --icon-plant: #3b82f6;
+    /* Blue for plant icon */
+    --icon-capacity: #22d3ee;
+    /* Cyan for capacity icon */
+    --icon-generation: #f59e0b;
+    /* Yellow for generation icon */
+    --icon-co2: #10b981;
+    /* Green for CO2 icon */
+    --chart-consumption: #ef4444;
+    /* Red for consumption line */
+    --chart-production: #3b82f6;
+    /* Blue for production line */
+    --danger: #ef4444;
+    /* Red for danger/error states */
+
+    /* UI Elements */
+    --card-border: #30363d;
+    /* Border color */
+    --filter-border: #3d4654;
+    /* Lighter border for filters */
+    --sidebar-width: 240px;
+    /* Sidebar width */
+
+    /* Component-Specific */
+    --month-card-active: #0066ff;
+    /* Active month (Sept) */
+    --month-card-inactive: rgba(255, 255, 255, 0.1);
+    /* Inactive months */
+}
+
+/*===========================================================
+    BASIC PAGE STRUCTURE
+  ===========================================================*/
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    min-height: 100vh;
+    width: 100%;
+}
+
+.content-wrapper {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Stack header and content vertically */
+}
+
+.main-content {
+    padding: 20px;
+    flex: 1;
+    /* Make main content take available space */
+    overflow-y: auto;
+}
+
+/* Fix for container in dashboard */
+.container-fluid {
+    width: 100%;
+    /* Ensure container takes full width */
+}
+
+/*===========================================================
+    SIDEBAR STYLES
+  ===========================================================*/
+.sidebar {
+    background-color: var(--sidebar-bg);
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: width 0.3s;
+    border-right: 1px solid var(--card-border);
+}
+
+.sidebar-header {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.sidebar-logo {
+    color: var(--blue-accent);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Navigation Items */
+.nav-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: var(--text-primary);
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+    background-color: rgba(0, 102, 255, 0.2);
+    border-left: 3px solid var(--blue-accent);
+}
+
+.nav-subitem {
+    color: var(--text-secondary);
+}
+
+/* Fix for NavLink text decoration */
+a.nav-item {
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    color: var(--text-primary);
+    transition: background-color 0.2s;
+}
+
+/*===========================================================
+    HEADER STYLES
+  ===========================================================*/
+.header {
+    height: 60px;
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.search-bar {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    flex: 1;
+    padding: 5px;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+/*===========================================================
+    CARD AND CONTAINER STYLES
+  ===========================================================*/
+.dashboard-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-card h5 {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Add space between the filter container and the chart */
+.filters-container {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1000;
+    background-color: var(--card-bg);
+    border: 1px solid var(--filter-border);
+    border-radius: 10px;
+}
+
+/* Ensure chart container doesn't interfere with dropdowns */
+.chart-container {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    height: 500px;
+    width: 100%;
+    color: var(--text-primary);
+}
+
+/*===========================================================
+    FORM ELEMENTS AND CONTROLS
+  ===========================================================*/
+/* Filter controls - with lighter background */
+.form-control,
+.form-select,
+input.dark-datepicker,
+.react-datepicker__input-container input {
+    background-color: var(--filter-bg) !important;
+    color: var(--text-primary);
+    border: 1px solid var(--filter-border);
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.form-control:focus,
+.form-select:focus,
+.react-datepicker__input-container input:focus {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-primary);
+    border-color: var(--blue-accent);
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+    outline: none;
+}
+
+.form-select option {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* Custom checkbox styles */
+.form-check-input {
+    background-color: var(--filter-bg);
+    border-color: var(--filter-border);
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--blue-accent);
+    border-color: var(--blue-accent);
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--blue-accent);
+    border-color: var(--blue-accent);
+}
+
+.btn-primary:hover {
+    background-color: var(--blue-hover);
+    border-color: var(--blue-hover);
+}
+
+.btn-outline-secondary {
+    background-color: var(--filter-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--filter-border) !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: var(--text-primary);
+}
+
+.btn-outline-primary {
+    color: var(--blue-accent);
+    border-color: var(--blue-accent);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--blue-accent);
+    color: white;
+}
+
+.btn-link {
+    color: var(--blue-accent);
+    text-decoration: none;
+}
+
+.btn-link:hover {
+    color: var(--blue-accent);
+    text-decoration: underline;
+}
+
+.btn-link:disabled {
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+/* Monthly button */
+.monthly-button {
+    background-color: var(--filter-bg);
+    border: 1px solid var(--filter-border);
+    color: var(--text-primary);
+    border-radius: 5px;
+    padding: 5px 15px;
+    font-size: 0.9rem;
+}
+
+/*===========================================================
+    DROPDOWN AND POPUP STYLES
+  ===========================================================*/
+.custom-dropdown {
+    position: relative;
+}
+
+.dropdown-menu.show {
+    position: absolute;
+    display: block;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 9999 !important;
+    transform: none !important;
+    margin-top: 2px;
+    min-width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--filter-border);
+    border-radius: 0.25rem;
+    padding: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    user-select: none;
+}
+
+.dropdown-item {
+    user-select: none;
+}
+
+.hover-highlight:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/*===========================================================
+  DROPDOWN TEXT IMPROVEMENTS
+===========================================================*/
+
+/* Make dropdown menu text lighter */
+.dropdown-menu.show {
+    color: #ffffff !important;
+    /* Bright white text */
+}
+
+/* Dropdown menu items */
+.dropdown-menu.show label,
+.dropdown-menu.show span,
+.dropdown-menu.show div:not(.btn),
+.dropdown-menu.show .form-check-label {
+    color: #ffffff !important;
+    /* Pure white for better contrast */
+}
+
+/* Ensure dropdown button text is visible */
+.custom-dropdown button {
+    color: #ffffff !important;
+    /* Bright white text */
+}
+
+/* Make checkbox text lighter */
+.form-check {
+    color: #ffffff !important;
+}
+
+/* For the "Select All" option specifically */
+#select-all-pumps+label,
+#select-all-metrics+label {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+/* Hover state for dropdown items */
+.hover-highlight {
+    color: #ffffff !important;
+}
+
+.hover-highlight:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    /* Slightly brighter on hover */
+}
+
+/* Close button inside dropdowns */
+.dropdown-menu .btn-outline-secondary {
+    color: #ffffff !important;
+}
+
+/* Improve dropdown item highlighting */
+.dropdown-menu .d-flex {
+    border-radius: 4px;
+    padding: 6px 8px !important;
+    margin-bottom: 4px !important;
+}
+
+/* Make the dropdown menu background slightly lighter for better contrast */
+.dropdown-menu.show {
+    background-color: #1a202c !important;
+    /* Slightly lighter than the default dark background */
+    border: 1px solid var(--filter-border);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Add divider styling */
+.dropdown-menu hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 8px 0;
+}
+
+/* Make checkmark icon more visible */
+.dropdown-menu .fa-check {
+    color: var(--blue-accent) !important;
+    font-size: 1rem; }
+
+/*===========================================================
+    DATEPICKER STYLES
+  ===========================================================*/
+.react-datepicker-popper {
+    z-index: 9999 !important;
+}
+
+.react-datepicker-wrapper {
+    display: block;
+    width: 100%;
+}
+
+.react-datepicker__input-container {
+    width: 100%;
+}
+
+.react-datepicker {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--filter-border) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.react-datepicker__header {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid var(--filter-border) !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+    color: var(--text-primary) !important;
+}
+
+.react-datepicker__day:hover {
+    background-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.react-datepicker__day--selected {
+    background-color: var(--blue-accent) !important;
+}
+
+.react-datepicker__navigation-icon::before {
+    border-color: var(--text-primary) !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+    background-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+/*===========================================================
+    DATA VISUALIZATION STYLES
+  ===========================================================*/
+/* Chart styles */
+.recharts-text {
+    fill: var(--text-secondary) !important;
+}
+
+.recharts-legend-item-text {
+    color: var(--text-primary) !important;
+}
+
+/* Map styles */
+.map-container {
+    height: 100%;
+    width: 100%;
+}
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+    background-color: #1e293b;
+}
+
+.leaflet-popup-content-wrapper {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-radius: 5px;
+}
+
+.leaflet-popup-content {
+    color: var(--text-primary);
+}
+
+.leaflet-popup-tip {
+    background-color: var(--card-bg);
+}
+
+.leaflet-popup-close-button {
+    color: var(--text-primary) !important;
+}
+
+/* Map control layers */
+.leaflet-control-layers {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 5px !important;
+}
+
+.leaflet-control-layers-toggle {
+    background-color: var(--card-bg) !important;
+}
+
+.leaflet-control-layers-expanded label {
+    color: var(--text-primary) !important;
+}
+
+.leaflet-control-layers-separator {
+    border-top-color: var(--card-border) !important;
+}
+
+.leaflet-control-layers-list input {
+    margin-right: 5px;
+}
+
+/*===========================================================
+    COMPONENT-SPECIFIC STYLES
+  ===========================================================*/
+/* Solar Stats */
+.solar-stats-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.solar-pump-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.solar-pump-image {
+    width: 140px;
+    height: auto;
+    object-fit: contain;
+    margin-left: 10px;
+}
+
+/* Stats styles */
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Stats bars */
+.stat-bar {
+    width: 3px;
+    height: 20px;
+    display: inline-block;
+    margin-right: 10px;
+    border-radius: 2px;
+}
+
+.stat-bar-blue {
+    background-color: var(--blue-accent);
+}
+
+.stat-bar-green {
+    background-color: var(--icon-co2);
+}
+
+.stat-bar-yellow {
+    background-color: var(--icon-generation);
+}
+
+.stat-bar-red {
+    background-color: var(--danger);
+}
+
+/* Month card styles */
+.month-card {
+    background-color: var(--month-card-inactive);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.2s;
+    color: var(--text-primary);
+}
+
+.month-card:hover {
+    transform: translateY(-5px);
+}
+
+.month-card.active,
+.bg-primary {
+    background-color: var(--blue-accent) !important;
+}
+
+.month-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+/* Weather widget styles */
+.weather-widget {
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.temperature {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.weather-icon {
+    font-size: 4rem;
+    margin: 10px 0;
+    color: var(--text-primary);
+}
+
+/* Custom marker colors */
+.custom-marker-active {
+    background-color: var(--icon-co2);
+    border-radius: 50%;
+}
+
+.custom-marker-maintenance {
+    background-color: var(--icon-generation);
+    border-radius: 50%;
+}
+
+.custom-marker-offline {
+    background-color: var(--danger);
+    border-radius: 50%;
+}
+
+/* Summary grid layout */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.summary-item {
+    padding: 1rem;
+    background-color: var(--filter-bg);
+    border-radius: 8px;
+}
+
+.summary-insights {
+    padding: 1rem;
+    background-color: var(--filter-bg);
+    border-radius: 8px;
+}
+
+/*===========================================================
+    UTILITY CLASSES
+  ===========================================================*/
+/* Icon colors */
+.text-primary {
+    color: var(--blue-accent) !important;
+}
+
+.text-success {
+    color: var(--icon-co2) !important;
+}
+
+.text-warning {
+    color: var(--icon-generation) !important;
+}
+
+.text-info {
+    color: var(--icon-capacity) !important;
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Financial stats */
+.h4 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Links */
+a {
+    color: var(--blue-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/*===========================================================
+    TABLE STYLES
+  ===========================================================*/
+.table {
+    color: var(--text-primary);
+}
+
+.table-dark {
+    --bs-table-bg: var(--filter-bg);
+    --bs-table-border-color: var(--filter-border);
+    color: var(--text-primary);
+}
+
+.table-dark th,
+.table-dark td {
+    border-color: var(--filter-border) !important;
+}
+
+/*===========================================================
+    RESPONSIVE DESIGN
+  ===========================================================*/
+@media (min-width: 576px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .solar-stats-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .solar-pump-image-container {
+        margin-top: 15px;
+        align-self: center;
+    } }
+
+/*===========================================================
+  PAGINATION STYLES
+===========================================================*/
+.pagination {
+    --bs-pagination-color: var(--text-primary);
+    --bs-pagination-bg: var(--filter-bg);
+    --bs-pagination-border-color: var(--filter-border);
+    --bs-pagination-hover-color: var(--text-primary);
+    --bs-pagination-hover-bg: rgba(255, 255, 255, 0.12);
+    --bs-pagination-hover-border-color: var(--filter-border);
+    --bs-pagination-active-bg: var(--blue-accent);
+    --bs-pagination-active-border-color: var(--blue-accent);
+    --bs-pagination-disabled-color: var(--text-muted);
+    --bs-pagination-disabled-bg: var(--card-bg);
+    --bs-pagination-disabled-border-color: var(--card-border);
+}
+
+.page-item .page-link {
+    background-color: var(--filter-bg);
+    color: var(--text-primary);
+    border-color: var(--filter-border);
+}
+
+.page-item.active .page-link {
+    background-color: var(--blue-accent);
+    border-color: var(--blue-accent);
+    color: white;
+    z-index: 3;
+}
+
+.page-item.disabled .page-link {
+    color: var(--text-muted);
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.page-item:not(.active) .page-link:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+    border-color: var(--filter-border); }   
+        /*===========================================================
+      TAB NAVIGATION
+    ===========================================================*/
+        .nav-pills .nav-link {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1rem;
+        }
+    
+        .nav-pills .nav-link:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    
+        .nav-pills .nav-link.disabled {
+            color: var(--text-muted);
+            cursor: not-allowed; }
+/*===========================================================
+  INPUT GROUP STYLING
+===========================================================*/
+.input-group-text {
+    color: var(--text-secondary);
+}
+
+.input-group .form-control:focus+.input-group-text {
+    border-color: var(--blue-accent);
+}
+
+/* Fix for number input spinner visibility on dark background */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    opacity: 0.7; }

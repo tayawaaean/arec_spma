@@ -1,0 +1,90 @@
+/* User Management Styles */
+
+/* Avatar styling */
+.user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: white;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Sticky header for tables */
+.table-responsive {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--card-bg);
+    z-index: 10;
+}
+
+/* Badge styling */
+.role-badge {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+.role-superadmin {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+.role-admin {
+    background: linear-gradient(45deg, #f39c12, #d35400);
+}
+
+.role-user {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+}
+
+/* Status indicator */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-active {
+    background-color: #2ecc71;
+}
+
+.status-inactive {
+    background-color: #95a5a6;
+}
+
+/* User table row highlight */
+.user-table-row:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.current-user-row {
+    background-color: rgba(52, 152, 219, 0.15) !important;
+}
+
+/* Activity timeline */
+.activity-timeline {
+    position: relative;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(52, 152, 219, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3498db; }

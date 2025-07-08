@@ -1,0 +1,81 @@
+/* Map component styles */
+
+/* Custom tooltips */
+.pump-tooltip {
+    min-width: 200px;
+  }
+  
+  .leaflet-tooltip {
+    background-color: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 5px !important;
+    padding: 8px !important;
+  }
+  
+  .leaflet-tooltip-top:before {
+    border-top-color: #1f2937 !important;
+  }
+  
+  /* Performance tooltip */
+  .performance-tooltip {
+    background-color: #1f2937 !important;
+    border: none !important;
+  }
+  
+  /* Map control buttons */
+  .map-custom-controls button {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Leaflet draw styles - override for dark theme */
+  .leaflet-draw-toolbar a {
+    background-color: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+  }
+  
+  .leaflet-draw-toolbar a:hover {
+    background-color: #374151 !important;
+  }
+  
+  .leaflet-draw-actions {
+    background-color: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .leaflet-draw-actions a {
+    color: white !important;
+    background-color: #1f2937 !important;
+  }
+  
+  .leaflet-draw-actions a:hover {
+    background-color: #374151 !important;
+  }
+  
+  /* Measurement control styles */
+  .leaflet-control-measure {
+    background-color: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .leaflet-control-measure a {
+    color: white !important;
+    background-color: #1f2937 !important;
+  }
+  
+  .leaflet-control-measure a:hover {
+    background-color: #374151 !important;
+  }
+  
+  .leaflet-measure-resultpopup {
+    background-color: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+  }

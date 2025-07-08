@@ -1,0 +1,208 @@
+/* Dark Theme Modal Styles */
+
+/* Modal background and container */
+.modal-content {
+    background-color: #141720;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    color: #e2e8f0;
+}
+
+/* Modal header */
+.modal-header {
+    background-color: #171c28;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 1.5rem;
+}
+
+.modal-title {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.modal-header .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+    opacity: 0.7;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+/* Modal body */
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Modal footer */
+.modal-footer {
+    background-color: #171c28;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 1.5rem;
+}
+
+/* Form labels */
+.modal-content .form-label {
+    color: #a0aec0;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Form inputs */
+.modal-content .form-control,
+.modal-content .form-select {
+    background-color: #0d111a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.modal-content .form-control:focus,
+.modal-content .form-select:focus {
+    background-color: #131825;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15);
+    color: #e2e8f0;
+}
+
+.modal-content .form-control::placeholder {
+    color: #4a5568;
+}
+
+/* Form help text */
+.modal-content .form-text {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+/* Input groups */
+.modal-content .input-group-text {
+    background-color: #171c28;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+/* Modal buttons */
+.modal-content .btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.modal-content .btn-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.modal-content .btn-secondary {
+    background-color: rgba(107, 114, 128, 0.2);
+    border-color: rgba(107, 114, 128, 0.1);
+    color: #e2e8f0;
+}
+
+.modal-content .btn-secondary:hover {
+    background-color: rgba(107, 114, 128, 0.3);
+    border-color: rgba(107, 114, 128, 0.2);
+}
+
+.modal-content .btn-danger {
+    background-color: #ef4444;
+    border-color: #ef4444;
+}
+
+.modal-content .btn-danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.modal-content .btn-outline-danger {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+.modal-content .btn-outline-danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+}
+
+/* Section headings in modal */
+.modal-content h6 {
+    color: #94a3b8;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Alert styling within modals */
+.modal-content .alert-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.modal-content .alert-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+/* Date picker styling */
+.modal-content input[type="date"] {
+    color-scheme: dark;
+}
+
+/* Required indicator */
+.form-label::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.form-label.optional::after {
+    content: ''; }
+        /* Additional styles for modal close button */
+        .btn-close-custom {
+            color: #94a3b8;
+            opacity: 0.7;
+            font-size: 1.25rem;
+            line-height: 1;
+            background: none;
+        }
+    
+        .btn-close-custom:hover {
+            color: #e2e8f0;
+            opacity: 1;
+            background: none;
+        }
+    
+        /* Override Bootstrap's default modal backdrop */
+        .modal-backdrop {
+            background-color: #000;
+            opacity: 0.7 !important;
+        }
+    
+        /* Improve modal transition */
+        .modal.fade .modal-dialog {
+            transition: transform 0.2s ease-out !important;
+        }
+    
+        /* Ensure modal form control feedback is visible */
+        .form-control.is-invalid,
+        .was-validated .form-control:invalid {
+            border-color: #ef4444;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+        }
+    
+        .form-control.is-valid,
+        .was-validated .form-control:valid {
+            border-color: rgba(255, 255, 255, 0.1);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        }
+    
+        .invalid-feedback {
+            color: #f87171;
+        }
+    
+        /* Fix for date inputs in dark theme */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.8); }

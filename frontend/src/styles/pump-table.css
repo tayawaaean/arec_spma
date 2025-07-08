@@ -1,0 +1,114 @@
+/* Focused styling for pump table visibility */
+.visible-table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pump-table {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #171c28 !important;
+    color: white !important;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.pump-table th {
+    background-color: rgba(59, 130, 246, 0.25) !important;
+    color: #a8b1c2 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 15px;
+    border-bottom: none !important;
+}
+
+.pump-table td {
+    padding: 15px !important;
+    color: white !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: none !important;
+    background-color: transparent !important;
+    vertical-align: middle;
+}
+
+.pump-table tr:hover td {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Ensure specific elements are visible */
+.pump-number,
+.pump-model,
+.pump-power,
+.pump-location span,
+.pump-date {
+    color: white !important;
+    font-weight: normal;
+}
+
+/* Location icon */
+.location-icon {
+    color: #3b82f6 !important;
+}
+
+/* Status badges with better contrast */
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.status-active {
+    background-color: rgba(16, 185, 129, 0.3) !important;
+    color: #4ade80 !important;
+}
+
+.status-inactive {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
+}
+
+.status-warning {
+    background-color: rgba(245, 158, 11, 0.3) !important;
+    color: #fbbf24 !important;
+}
+
+/* Make action buttons more visible */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: transparent;
+}
+
+.edit-btn {
+    border-color: #60a5fa !important;
+    color: #60a5fa !important;
+}
+
+.edit-btn:hover {
+    background-color: rgba(59, 130, 246, 0.3) !important;
+    color: #60a5fa !important;
+}
+
+.delete-btn {
+    border-color: #f87171 !important;
+    color: #f87171 !important;
+}
+
+.delete-btn:hover {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
+}
+
+/* Force Bootstrap table to use our styles */
+.table>:not(caption)>*>* {
+    background-color: transparent !important;
+    color: white !important; }

@@ -1,0 +1,460 @@
+/* Data Analysis Page Specific Styles */
+
+/* Filter Section */
+.filter-card {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.filter-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.filter-icon-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background-color: rgba(59, 130, 246, 0.15);
+    margin-top: 24px;
+}
+
+.filter-icon {
+    color: #3b82f6;
+    font-size: 14px;
+}
+
+.accent-blue {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.accent-blue .filter-icon {
+    color: #3b82f6;
+}
+
+.accent-green {
+    background-color: rgba(16, 185, 129, 0.15);
+}
+
+.accent-green .filter-icon {
+    color: #10b981;
+}
+
+.accent-purple {
+    background-color: rgba(139, 92, 246, 0.15);
+}
+
+.accent-purple .filter-icon {
+    color: #8b5cf6;
+}
+
+.filter-label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.filter-select {
+    background-color: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border-radius: 6px;
+    height: 38px;
+}
+
+.date-range-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-picker {
+    background-color: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border-radius: 6px;
+    height: 38px;
+    padding: 0.375rem 0.75rem;
+}
+
+.date-range-separator {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.date-presets {
+    display: flex;
+    gap: 12px;
+    margin-left: 46px;
+}
+
+.date-preset-btn {
+    color: #94a3b8;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+    transition: color 0.15s ease;
+    text-decoration: none;
+}
+
+.date-preset-btn:hover {
+    color: #3b82f6;
+}
+
+/* Stat Cards */
+.stat-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card .card-body {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 1.25rem;
+}
+
+.stat-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.voltage-bg {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.power-bg {
+    background-color: rgba(245, 158, 11, 0.15);
+}
+
+.flow-bg {
+    background-color: rgba(34, 211, 238, 0.15);
+}
+
+.energy-bg {
+    background-color: rgba(16, 185, 129, 0.15);
+}
+
+.stat-icon {
+    font-size: 1.25rem;
+    color: #e2e8f0;
+}
+
+.voltage-bg .stat-icon {
+    color: #3b82f6;
+}
+
+.power-bg .stat-icon {
+    color: #f59e0b;
+}
+
+.flow-bg .stat-icon {
+    color: #22d3ee;
+}
+
+.energy-bg .stat-icon {
+    color: #10b981;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 0.25rem;
+}
+
+.stat-change {
+    font-size: 0.75rem;
+    display: block;
+}
+
+.stat-change.positive {
+    color: #10b981;
+}
+
+.stat-change.negative {
+    color: #ef4444;
+}
+
+.loading-placeholder {
+    opacity: 0.6;
+}
+
+/* Chart Styling */
+.chart-container {
+    height: 400px;
+    max-height: 400px;
+}
+
+.chart-header p {
+    font-size: 0.85rem;
+}
+
+.chart-controls .btn-outline-secondary {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.chart-controls .btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.chart-controls .btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.chart-type-toggle .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.chart-settings-menu {
+    background-color: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem;
+    min-width: 200px;
+}
+
+.chart-settings-menu .dropdown-item {
+    color: #e2e8f0;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.chart-settings-menu .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.chart-settings-menu .form-check-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.chart-settings-menu .form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.chart-settings-menu .form-check-label {
+    color: #e2e8f0;
+}
+
+.chart-loading-state,
+.chart-empty-state {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: rgba(148, 163, 184, 0.2);
+    margin-bottom: 1rem;
+}
+
+.empty-icon.sm {
+    font-size: 2rem;
+}
+
+/* Table Styling */
+.stats-table {
+    margin-bottom: 0;
+}
+
+.stats-table th {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-top: none;
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem 1rem;
+}
+
+.stats-table td {
+    padding: 1rem;
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.pump-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.pump-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+}
+
+.stat-highlight {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+}
+
+.metric-color {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 8px;
+}
+
+/* Custom Dropdown Styling */
+.custom-dropdown .dropdown-menu {
+    background-color: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hover-highlight:hover {
+    background-color: rgba(255, 255, 255, 0.05); }
+/* Add these rules to fix the dropdown z-index issues */
+
+/* Ensure dropdowns appear on top of other elements */
+.custom-dropdown {
+    position: relative;
+}
+
+.custom-dropdown .dropdown-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+    background-color: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* Fix positioning for specific dropdown controls */
+.filter-controls-container {
+    z-index: 10;
+    position: relative;
+}
+
+/* Prevent chart from overlapping dropdowns */
+.chart-container {
+    z-index: 1;
+    position: relative;
+}
+
+/* Ensure the datepicker popups display properly */
+.react-datepicker-popper {
+    z-index: 9999 !important;
+}
+
+/* Fix for dropdown menus being cut off */
+.dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important; }
+/*===========================================================
+  Z-INDEX FIXES FOR DROPDOWNS
+===========================================================*/
+
+/* Ensure all dropdown menus appear on top of everything */
+.dropdown-menu.show,
+.react-datepicker-popper {
+    z-index: 99999 !important;
+    /* Ultra high z-index */
+    position: absolute !important;
+}
+
+/* Specific fix for the metrics dropdown menu */
+.metrics-dropdown .dropdown-menu.show {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* Ensure the filter section is above the chart */
+.filter-card,
+.filter-group,
+.custom-dropdown {
+    position: relative;
+    z-index: 10000 !important;
+}
+
+/* Ensure chart is below dropdowns */
+.chart-container,
+.dashboard-card:not(.filter-card) {
+    position: relative;
+    z-index: 1 !important;
+}
+
+/* Fix for DatePicker dropdown */
+.react-datepicker-wrapper {
+    position: relative;
+    z-index: 10000 !important;
+}
+
+.react-datepicker-popper {
+    position: absolute !important;
+    z-index: 99999 !important;
+    transform: translate3d(0, 40px, 0) !important;
+}
+
+/* Fix for the datepicker portal */
+.react-datepicker-portal {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    left: 0;
+    top: 0;
+    z-index: 99999 !important;
+}
+
+/* Make sure the dropdown parent has positioning context */
+.dropdown {
+    position: relative !important;
+}
+
+/* Fix specifically for the metrics selector */
+[data-testid="metrics-selector"] .dropdown-menu.show,
+[id="metrics-dropdown"] .dropdown-menu.show {
+    z-index: 99999 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+}
