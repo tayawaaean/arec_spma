@@ -3,12 +3,12 @@ import { Container, Row, Col, Card, Table, Button, Form, InputGroup, Pagination 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUserPlus, faEdit, faTrash, faSearch, 
-  faFilter, faSort, faSyncAlt 
+  faFilter, faSort, faSyncAlt, faUsers
 } from '@fortawesome/free-solid-svg-icons';
 import AddUserModal from '../components/users/AddUserModal';
 import EditUserModal from '../components/users/EditUserModal';
 import DeleteUserModal from '../components/users/DeleteUserModal';
-import { getUsers} from '../utils/userDataSimulator';
+import { getUsers, getUserTypes } from '../utils/userDataSimulator';
 
 const Users = () => {
   // State management
@@ -28,6 +28,10 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const usersPerPage = 10;
+  
+  // Selection state for checkboxes
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   // Fetch users
   const fetchUsers = () => {
@@ -57,6 +61,9 @@ const Users = () => {
       const paginatedUsers = sortedUsers.slice(startIndex, startIndex + usersPerPage);
       setFilteredUsers(paginatedUsers);
       
+      // Reset selection when data changes
+      setSelectedUsers([]);
+      setSelectAll(false);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -119,6 +126,73 @@ const Users = () => {
     setCurrentPage(pageNumber);
   };
   
+  // Handle user selection
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedUsers([]);
+    } else {
+      // Only select users that are not superadmin
+      const selectableUsers = filteredUsers
+        .filter(user => user.userType !== 'superadmin')
+        .map(user => user.id);
+      setSelectedUsers(selectableUsers);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectUser = (userId) => {
+    if (selectedUsers.includes(userId)) {
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+      setSelectAll(false);
+    } else {
+      setSelectedUsers([...selectedUsers, userId]);
+      
+      // Check if all selectable users are now selected
+      const selectableUsers = filteredUsers.filter(user => user.userType !== 'superadmin');
+      if (selectedUsers.length + 1 === selectableUsers.length) {
+        setSelectAll(true);
+      }
+    }
+  };
+  
+  // Bulk actions
+  const handleBulkDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`)) {
+      // In a real app, you would call your API here
+      // For this demo, we'll use our simulator function multiple times
+      
+      // Get updated user list after deletion
+      const updatedUsers = users.filter(user => !selectedUsers.includes(user.id));
+      setUsers(updatedUsers);
+      
+      // Update filtered users
+      const updatedFilteredUsers = filteredUsers.filter(user => !selectedUsers.includes(user.id));
+      setFilteredUsers(updatedFilteredUsers);
+      
+      // Reset selection
+      setSelectedUsers([]);
+      setSelectAll(false);
+    }
+  };
+  
+  // User activity helpers
+  const getActivityStatus = (user) => {
+    // This would come from your backend in a real app
+    // For now, we'll use a simple algorithm based on user ID
+    const random = user.id % 3;
+    return random === 0 ? 'active' : random === 1 ? 'idle' : 'offline';
+  };
+
+  const getLastActivity = (user) => {
+    // Again, this would come from your backend in a real app
+    const random = user.id % 5;
+    if (random === 0) return 'Just now';
+    if (random === 1) return '5 minutes ago';
+    if (random === 2) return 'About an hour ago';
+    if (random === 3) return 'Yesterday';
+    return 'Last week';
+  };
+  
   // Generate pagination items
   const renderPaginationItems = () => {
     let items = [];
@@ -176,6 +250,50 @@ const Users = () => {
 
   return (
     <Container fluid>
+      <style>{`
+        .activity-indicator {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          margin-right: 8px;
+        }
+
+        .activity-active {
+          background-color: #10b981;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .activity-idle {
+          background-color: #f59e0b;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+
+        .activity-offline {
+          background-color: #6b7280;
+          box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
+        }
+
+        .activity-time {
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+        }
+        
+        .bulk-actions-bar {
+          animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .checkbox-column {
+          width: 40px;
+          text-align: center;
+        }
+      `}</style>
+    
       <Row className="mb-4">
         <Col>
           <h4 className="mb-3">User Management</h4>
@@ -266,6 +384,50 @@ const Users = () => {
           </Card>
         </Col>
       </Row>
+      
+      {/* Bulk Actions Bar */}
+      {selectedUsers.length > 0 && (
+        <div className="bulk-actions-bar p-3 mb-4" style={{ 
+          background: 'var(--card-bg)', 
+          borderRadius: '0.5rem',
+          border: '1px solid var(--card-border)' 
+        }}>
+          <Row className="align-items-center">
+            <Col>
+              <div className="d-flex align-items-center">
+                <FontAwesomeIcon icon={faUsers} className="me-2 text-primary" />
+                <strong>{selectedUsers.length}</strong> users selected
+              </div>
+            </Col>
+            <Col xs="auto">
+              <Button 
+                variant="outline-danger" 
+                size="sm" 
+                className="me-2"
+                onClick={handleBulkDelete}
+              >
+                <FontAwesomeIcon icon={faTrash} className="me-2" />
+                Delete Selected
+              </Button>
+              <Button 
+                variant="outline-secondary" 
+                size="sm"
+                onClick={() => {
+                  setSelectedUsers([]);
+                  setSelectAll(false);
+                }}
+                style={{ 
+                  background: 'rgba(255, 255, 255, 0.05)', 
+                  color: 'var(--text-primary)', 
+                  borderColor: 'var(--filter-border)'
+                }}
+              >
+                Cancel
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      )}
 
       {/* User Table */}
       <Row>
@@ -276,6 +438,14 @@ const Users = () => {
                 <Table variant="dark" hover>
                   <thead>
                     <tr>
+                      <th className="checkbox-column">
+                        <Form.Check 
+                          type="checkbox" 
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          aria-label="Select all users"
+                        />
+                      </th>
                       <th 
                         onClick={() => handleSort('username')}
                         style={{ cursor: 'pointer' }}
@@ -304,13 +474,14 @@ const Users = () => {
                           }}
                         />
                       </th>
+                      <th>Activity</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {loading ? (
                       <tr>
-                        <td colSpan="3" className="text-center">
+                        <td colSpan="5" className="text-center">
                           <div className="spinner-border text-primary" role="status">
                             <span className="visually-hidden">Loading...</span>
                           </div>
@@ -318,11 +489,20 @@ const Users = () => {
                       </tr>
                     ) : filteredUsers.length === 0 ? (
                       <tr>
-                        <td colSpan="3" className="text-center">No users found</td>
+                        <td colSpan="5" className="text-center">No users found</td>
                       </tr>
                     ) : (
                       filteredUsers.map(user => (
                         <tr key={user.id}>
+                          <td onClick={(e) => e.stopPropagation()} className="checkbox-column">
+                            <Form.Check 
+                              type="checkbox" 
+                              checked={selectedUsers.includes(user.id)}
+                              onChange={() => handleSelectUser(user.id)}
+                              disabled={user.userType === 'superadmin'}
+                              aria-label={`Select ${user.username}`}
+                            />
+                          </td>
                           <td>{user.username}</td>
                           <td>
                             <span className={`badge ${
@@ -334,18 +514,33 @@ const Users = () => {
                             </span>
                           </td>
                           <td>
+                            <div className="d-flex align-items-center">
+                              <span className={`activity-indicator activity-${getActivityStatus(user)}`}></span>
+                              <div>
+                                <div>{getActivityStatus(user)}</div>
+                                <div className="activity-time">{getLastActivity(user)}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
                             <Button 
                               variant="outline-primary" 
                               size="sm" 
                               className="me-2"
-                              onClick={() => handleEditUser(user)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditUser(user);
+                              }}
                             >
                               <FontAwesomeIcon icon={faEdit} />
                             </Button>
                             <Button 
                               variant="outline-danger" 
                               size="sm"
-                              onClick={() => handleDeleteUser(user)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteUser(user);
+                              }}
                               disabled={user.userType === 'superadmin'} // Prevent deleting superadmin
                             >
                               <FontAwesomeIcon icon={faTrash} />
