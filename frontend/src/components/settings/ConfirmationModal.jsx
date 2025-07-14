@@ -19,37 +19,35 @@ const ConfirmationModal = ({
       backdrop="static"
       keyboard={false}
       centered
+      className="settings-modal"
     >
-      <Modal.Header style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)' }}>
-        <Modal.Title style={{ color: 'var(--text-primary)' }}>
-          {title}
-        </Modal.Title>
+      <Modal.Header className="settings-modal-header">
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ background: 'var(--card-bg)', color: 'var(--text-primary)' }}>
+      <Modal.Body className="settings-modal-body">
         <div className="text-center mb-4">
-          <FontAwesomeIcon 
-            icon={faExclamationTriangle} 
-            size="3x" 
-            className="text-warning mb-3"
-          />
-          <p>{message}</p>
+          <div className="modal-icon-container">
+            <FontAwesomeIcon 
+              icon={faExclamationTriangle} 
+              size="3x" 
+              className="text-warning modal-icon"
+            />
+          </div>
+          <p className="mt-3">{message}</p>
         </div>
       </Modal.Body>
-      <Modal.Footer style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--card-border)' }}>
+      <Modal.Footer className="settings-modal-footer">
         <Button 
           variant="outline-secondary" 
           onClick={onHide}
-          style={{ 
-            background: 'var(--filter-bg)', 
-            color: 'var(--text-primary)', 
-            borderColor: 'var(--filter-border)'
-          }}
+          className="settings-btn settings-btn-secondary"
         >
           Cancel
         </Button>
         <Button 
           variant={confirmButtonVariant} 
           onClick={onConfirm}
+          className="settings-btn"
         >
           {confirmButtonText || 'Confirm'}
         </Button>

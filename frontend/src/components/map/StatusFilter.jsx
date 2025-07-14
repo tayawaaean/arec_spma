@@ -53,12 +53,12 @@ const StatusFilter = ({ statusFilter, handleStatusFilter, searchQuery, setSearch
             Maintenance
           </Button>
           <Button
-            variant={statusFilter === 'offline' ? 'danger' : 'outline-danger'}
+            variant={statusFilter === 'inactive' ? 'danger' : 'outline-danger'}
             size="sm"
-            onClick={() => handleStatusFilter('offline')}
+            onClick={() => handleStatusFilter('inactive')}
           >
             <FontAwesomeIcon icon={faCircle} className="text-danger me-1" size="xs" />
-            Offline
+            Inactive
           </Button>
         </div>
       </Col>

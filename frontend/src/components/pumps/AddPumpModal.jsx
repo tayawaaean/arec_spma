@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, Spinner, Image } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faTimes, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faSave, faTimes, faMapMarkedAlt, 
+  faLocationArrow, faCamera, faTrash, faSpinner 
+} from '@fortawesome/free-solid-svg-icons';
+import { pumpService } from '../../services/pumpService';
 
 const AddPumpModal = ({ show, handleClose, handleAdd }) => {
   const [validated, setValidated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  
   const [pumpData, setPumpData] = useState({
     solarPumpNumber: '',
     model: '',
@@ -29,6 +38,147 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
     }
   });
 
+  // Get current location using browser's Geolocation API
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+    
+    setGettingLocation(true);
+    setLocationError(null);
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        // Update form data with coordinates
+        setPumpData({
+          ...pumpData,
+          lat: latitude,
+          lng: longitude
+        });
+        
+        // Get address from coordinates
+        try {
+          const addressData = await pumpService.reverseGeocode(latitude, longitude);
+          setPumpData(prev => ({
+            ...prev,
+            lat: latitude,
+            lng: longitude,
+            address: {
+              ...prev.address,
+              ...addressData
+            }
+          }));
+        } catch (error) {
+          console.error('Error getting address from coordinates:', error);
+        }
+        
+        setGettingLocation(false);
+      },
+      (error) => {
+        setGettingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError('Location permission denied');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError('Location information unavailable');
+            break;
+          case error.TIMEOUT:
+            setLocationError('Location request timed out');
+            break;
+          default:
+            setLocationError('An unknown error occurred');
+            break;
+        }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+  // Handle manual coordinates change and get address
+  const handleCoordinatesChange = async (e) => {
+    const { name, value } = e.target;
+    
+    // Update the coordinate field
+    setPumpData({
+      ...pumpData,
+      [name]: value
+    });
+    
+    // If both lat and lng have values, try to get the address
+    const updatedPumpData = {
+      ...pumpData,
+      [name]: value
+    };
+    
+    if (updatedPumpData.lat && updatedPumpData.lng) {
+      try {
+        setLoading(true);
+        const addressData = await pumpService.reverseGeocode(
+          updatedPumpData.lat, 
+          updatedPumpData.lng
+        );
+        
+        setPumpData({
+          ...updatedPumpData,
+          address: {
+            ...updatedPumpData.address,
+            ...addressData
+          }
+        });
+      } catch (error) {
+        console.error('Error getting address from coordinates:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check file size (limit to 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size should not exceed 2MB');
+      return;
+    }
+    
+    // Check file type
+    if (!file.type.match('image.*')) {
+      alert('Only image files are allowed');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      // Set image preview
+      setImagePreview(event.target.result);
+      
+      // Store base64 data in form
+      setPumpData({
+        ...pumpData,
+        image: event.target.result
+      });
+    };
+    
+    reader.readAsDataURL(file);
+  };
+
+  // Remove uploaded image
+  const removeImage = () => {
+    setImagePreview(null);
+    setPumpData({
+      ...pumpData,
+      image: ''
+    });
+  };
+
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.includes('.')) {
@@ -46,6 +196,7 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
     }
   };
 
+  // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -69,6 +220,7 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
     resetForm();
   };
   
+  // Reset form fields
   const resetForm = () => {
     setPumpData({
       solarPumpNumber: '',
@@ -94,8 +246,10 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
       }
     });
     setValidated(false);
+    setImagePreview(null);
   };
   
+  // Handle cancel button
   const handleCancel = () => {
     resetForm();
     handleClose();
@@ -301,7 +455,7 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
-                  <option value="warning">Warning</option>
+                  <option value="maintainance">Maintainance</option>
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -322,10 +476,84 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
             </Col>
           </Row>
           
+          {/* Image Upload Section */}
+          <h6 className="mt-4 mb-3">
+            <FontAwesomeIcon icon={faCamera} className="me-2 text-info" />
+            Pump Image
+          </h6>
+          <Row className="mb-4">
+            <Col md={12}>
+              <div className="image-upload-container">
+                {!imagePreview ? (
+                  <>
+                    <Form.Label htmlFor="image-upload" className="image-upload-label">
+                      <div className="upload-placeholder">
+                        <FontAwesomeIcon icon={faCamera} size="2x" className="mb-2" />
+                        <p>Click to upload pump image</p>
+                        <small className="text-muted">Maximum size: 2MB. Formats: JPG, PNG</small>
+                      </div>
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        style={{ display: 'none' }}
+                      />
+                    </Form.Label>
+                  </>
+                ) : (
+                  <div className="image-preview-container">
+                    <Image 
+                      src={imagePreview} 
+                      alt="Pump preview" 
+                      thumbnail 
+                      className="image-preview" 
+                    />
+                    <Button 
+                      variant="danger" 
+                      size="sm" 
+                      onClick={removeImage} 
+                      className="remove-image-btn"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                      <span className="ms-1">Remove</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Col>
+          </Row>
+          
           <h6 className="mt-4 mb-3">
             <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2 text-primary" />
             Location
+            <Button 
+              variant="outline-primary" 
+              size="sm" 
+              className="ms-2" 
+              onClick={getCurrentLocation}
+              disabled={gettingLocation}
+            >
+              {gettingLocation ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} spin className="me-1" />
+                  Getting Location...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faLocationArrow} className="me-1" />
+                  Get Current Location
+                </>
+              )}
+            </Button>
           </h6>
+          
+          {locationError && (
+            <div className="alert alert-warning mb-3">
+              <small>{locationError}</small>
+            </div>
+          )}
+          
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group controlId="lat">
@@ -336,7 +564,8 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   step="any"
                   name="lat"
                   value={pumpData.lat}
-                  onChange={handleChange}
+                  onChange={handleCoordinatesChange}
+                  placeholder="e.g. 14.5995"
                 />
                 <Form.Control.Feedback type="invalid">
                   Latitude is required.
@@ -352,7 +581,8 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   step="any"
                   name="lng"
                   value={pumpData.lng}
-                  onChange={handleChange}
+                  onChange={handleCoordinatesChange}
+                  placeholder="e.g. 120.9842"
                 />
                 <Form.Control.Feedback type="invalid">
                   Longitude is required.
@@ -370,9 +600,11 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   name="address.barangay"
                   value={pumpData.address.barangay}
                   onChange={handleChange}
+                  placeholder={loading ? "Loading..." : ""}
+                  disabled={loading}
                 />
                 <Form.Text className="text-muted">
-                  Will be auto-filled from coordinates if left empty.
+                  Auto-filled from coordinates
                 </Form.Text>
               </Form.Group>
             </Col>
@@ -384,9 +616,11 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   name="address.municipality"
                   value={pumpData.address.municipality}
                   onChange={handleChange}
+                  placeholder={loading ? "Loading..." : ""}
+                  disabled={loading}
                 />
                 <Form.Text className="text-muted">
-                  Will be auto-filled from coordinates if left empty.
+                  Auto-filled from coordinates
                 </Form.Text>
               </Form.Group>
             </Col>
@@ -401,9 +635,11 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   name="address.region"
                   value={pumpData.address.region}
                   onChange={handleChange}
+                  placeholder={loading ? "Loading..." : ""}
+                  disabled={loading}
                 />
                 <Form.Text className="text-muted">
-                  Will be auto-filled from coordinates if left empty.
+                  Auto-filled from coordinates
                 </Form.Text>
               </Form.Group>
             </Col>
@@ -415,24 +651,11 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
                   name="address.country"
                   value={pumpData.address.country}
                   onChange={handleChange}
+                  disabled={loading}
                 />
-                <Form.Text className="text-muted">
-                  Default: Philippines
-                </Form.Text>
               </Form.Group>
             </Col>
           </Row>
-          
-          <Form.Group className="mb-3" controlId="image">
-            <Form.Label className="optional">Image URL (Optional)</Form.Label>
-            <Form.Control
-              type="text"
-              name="image"
-              value={pumpData.image}
-              onChange={handleChange}
-              placeholder="Enter image URL"
-            />
-          </Form.Group>
         </Modal.Body>
         
         <Modal.Footer>
@@ -440,7 +663,7 @@ const AddPumpModal = ({ show, handleClose, handleAdd }) => {
             <FontAwesomeIcon icon={faTimes} className="me-2" />
             Cancel
           </Button>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" disabled={loading}>
             <FontAwesomeIcon icon={faSave} className="me-2" />
             Save Pump
           </Button>

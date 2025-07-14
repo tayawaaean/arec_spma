@@ -1,235 +1,197 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faSolarPanel, faChargingStation, 
   faBoltLightning, faLeaf, faWater, 
   faGasPump, faTruck, faLightbulb,
-  faClock, faUser, faInfoCircle
+  faInfoCircle, faArrowUp
 } from '@fortawesome/free-solid-svg-icons';
+import '../../styles/solar-stats.css';
 
 const SolarStats = ({ timeRange = 'month' }) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  
-  // Auto-update current time every minute
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-    return () => clearInterval(timer);
-  }, []);
-  
-  // Format date exactly as YYYY-MM-DD HH:MM:SS
-  const formatDateTime = (date) => {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-    
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  // Performance data
+  const performanceData = {
+    yield: {
+      value: '156',
+      unit: 'kWh',
+      change: '+12%',
+      changeType: 'positive'
+    },
+    pumps: {
+      value: '16',
+      unit: '',
+      icon: faSolarPanel,
+      color: '#3b82f6'
+    },
+    capacity: {
+      value: '2.205',
+      unit: 'kW',
+      icon: faChargingStation,
+      color: '#38bdf8'
+    },
+    generation: {
+      value: '68.21',
+      unit: 'mWh',
+      icon: faBoltLightning,
+      color: '#eab308'
+    },
+    co2saved: {
+      value: '16',
+      unit: 'tons',
+      icon: faLeaf,
+      color: '#10b981'
+    }
   };
+
+  // Water usage data
+  const waterData = {
+    today: {
+      value: '35,450',
+      label: 'Today'
+    },
+    month: {
+      value: '1,256,230',
+      label: 'Last 30 days'
+    }
+  };
+
+  // Savings data
+  const savingsData = [
+    {
+      type: 'gasoline',
+      icon: faGasPump,
+      value: '₱12,450',
+      label: 'vs Gasoline',
+      color: '#ef4444'
+    },
+    {
+      type: 'diesel',
+      icon: faTruck,
+      value: '₱9,380',
+      label: 'vs Diesel',
+      color: '#f59e0b'
+    },
+    {
+      type: 'electric',
+      icon: faLightbulb,
+      value: '₱8,245',
+      label: 'vs Electric',
+      color: '#10b981'
+    }
+  ];
   
   return (
-    <div className="dashboard-card h-100">
-      <div className="dashboard-card-header d-flex justify-content-between align-items-center mb-3">
+    <div className="dashboard-card solar-stats-card h-100">
+      <div className="solar-stats-header">
         <div className="d-flex align-items-center">
           <h5 className="mb-0">Solar Pump Performance</h5>
           <OverlayTrigger
             placement="right"
             overlay={
-              <Tooltip id="solar-performance-info">
+              <Tooltip id="solar-performance-info" className="custom-tooltip">
                 Overview of your solar pump system's energy production and efficiency.
               </Tooltip>
             }
           >
-            <FontAwesomeIcon icon={faInfoCircle} className="ms-2 text-muted" />
+            <FontAwesomeIcon icon={faInfoCircle} className="ms-2 info-icon" />
           </OverlayTrigger>
-        </div>
-        <div className="d-flex align-items-center">
-          <span className="text-muted me-3">
-            <FontAwesomeIcon icon={faUser} className="me-1" /> Dextiee
-          </span>
-          <span className="text-muted small">
-            <FontAwesomeIcon icon={faClock} className="me-1" /> {formatDateTime(currentTime)}
-          </span>
         </div>
       </div>
       
-      <Row>
-        <Col md={3}>
-          <div className="total-yield-container text-center p-3 h-100 border-end">
-            <h6 className="text-muted mb-1">Total yield</h6>
-            <h2 className="display-4 mb-0 fw-bold">156</h2>
-            <div className="text-primary mb-0">kWh</div>
-            <div className="text-success small mt-2">
-              <i className="fas fa-arrow-up"></i> +12% vs previous {timeRange}
+      <div className="solar-stats-content">
+        {/* Yield and Stats Section */}
+        <div className="yield-section">
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(210px, 1fr) 3fr", gap: "0.6rem" }}>
+            <div>
+              <div className="yield-card">
+                <div className="yield-label">TOTAL YIELD</div>
+                <div className="yield-value">{performanceData.yield.value}</div>
+                <div className="yield-unit">kWh</div>
+                <div className="yield-comparison">
+                  <FontAwesomeIcon icon={faArrowUp} />
+                  <span>{performanceData.yield.change} vs previous {timeRange}</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="stats-grid">
+                {Object.entries(performanceData)
+                  .filter(([key]) => key !== 'yield')
+                  .map(([key, stat]) => (
+                    <div key={key} className="stats-item">
+                      <div className="stats-content">
+                        <div className="stats-label">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</div>
+                        <div className="stats-value">
+                          {stat.value}
+                          {stat.unit && <small>{stat.unit}</small>}
+                        </div>
+                        <div className="stats-icon-container">
+                          <div className="stats-icon" style={{ backgroundColor: `${stat.color}20`, color: stat.color }}>
+                            <FontAwesomeIcon icon={stat.icon} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                ))}
+              </div>
             </div>
           </div>
-        </Col>
-        <Col md={9}>
-          <Row className="text-center mb-4">
-            <Col>
-              <div className="stat-value">16</div>
-              <div className="d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faSolarPanel} className="text-primary me-2" />
-                <div className="stat-label">Pumps</div>
-              </div>
-            </Col>
-            <Col>
-              <div className="stat-value">2.205 <small className="text-muted">kW</small></div>
-              <div className="d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faChargingStation} className="text-info me-2" />
-                <div className="stat-label">Capacity</div>
-              </div>
-            </Col>
-            <Col>
-              <div className="stat-value">68.21 <small className="text-muted">mWh</small></div>
-              <div className="d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faBoltLightning} className="text-warning me-2" />
-                <div className="stat-label">Generation</div>
-              </div>
-            </Col>
-            <Col>
-              <div className="stat-value">16 <small className="text-muted">tons</small></div>
-              <div className="d-flex justify-content-center align-items-center">
-                <FontAwesomeIcon icon={faLeaf} className="text-success me-2" />
-                <div className="stat-label">CO2 Saved</div>
-              </div>
-            </Col>
-          </Row>
-          
-          <Row className="mt-4">
-            <Col md={6} className="border-end">
-              <div className="text-muted mb-2 d-flex align-items-center">
-                <FontAwesomeIcon icon={faWater} className="me-2 text-info" />
-                Total Water Pumped (Liters)
-              </div>
-              <Row>
-                <Col>
-                  <div className="h4 mb-0">35,450</div>
-                  <div className="text-muted small">Today</div>
-                </Col>
-                <Col>
-                  <div className="h4 mb-0">1,256,230</div>
-                  <div className="text-muted small">Last 30 days</div>
-                </Col>
-              </Row>
-            </Col>
-            <Col md={6}>
-              <div className="text-muted mb-2">
-                Savings (PHP)
-              </div>
-              <Row>
-                <Col>
-                  <div className="h5 mb-1 d-flex align-items-center">
-                    <FontAwesomeIcon icon={faGasPump} className="me-2 text-danger" />
-                    <span>₱12,450</span>
+        </div>
+
+        {/* Water and Savings Metrics Section */}
+        <div className="metrics-row">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
+            <div>
+              <div className="metrics-card water-metrics">
+                <div className="card-header">
+                  <div className="header-title">
+                    <FontAwesomeIcon icon={faWater} className="header-icon" />
+                    <span>Total Water Pumped (Liters)</span>
                   </div>
-                  <div className="h5 mb-1 d-flex align-items-center">
-                    <FontAwesomeIcon icon={faTruck} className="me-2 text-warning" />
-                    <span>₱9,380</span>
+                </div>
+                <div className="card-body">
+                  <div className="metrics-values">
+                    <div className="metric-block">
+                      <div className="metric-value">{waterData.today.value}</div>
+                      <div className="metric-label">{waterData.today.label}</div>
+                    </div>
+                    <div className="metric-block">
+                      <div className="metric-value">{waterData.month.value}</div>
+                      <div className="metric-label">{waterData.month.label}</div>
+                    </div>
                   </div>
-                  <div className="h5 mb-0 d-flex align-items-center">
-                    <FontAwesomeIcon icon={faLightbulb} className="me-2 text-success" />
-                    <span>₱8,245</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="metrics-card savings-metrics">
+                <div className="card-header">
+                  <div className="header-title">
+                    <span>Savings (PHP)</span>
                   </div>
-                </Col>
-                <Col className="text-muted">
-                  <div className="small mb-1">vs Gasoline</div>
-                  <div className="small mb-1">vs Diesel</div>
-                  <div className="small mb-0">vs Electric</div>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-<Row className="mt-4">
-  <Col md={6}>
-    <h6 className="text-muted mb-3">Recent Alerts</h6>
-    <div className="alerts-container">
-      <div className="alert-item d-flex align-items-center py-2 border-bottom">
-        <div className="alert-icon alert-warning me-3">
-          <FontAwesomeIcon icon={faBoltLightning} />
-        </div>
-        <div className="alert-content">
-          <div className="small fw-bold">Pump #8 Power Fluctuation</div>
-          <div className="small text-muted">Today, 01:24:33</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-warning">Warning</span>
+                </div>
+                <div className="card-body">
+                  <div className="savings-content">
+                    {savingsData.map((saving, index) => (
+                      <div key={index} className="saving-row">
+                        <div 
+                          className="saving-icon" 
+                          style={{ backgroundColor: `${saving.color}20`, color: saving.color }}
+                        >
+                          <FontAwesomeIcon icon={saving.icon} />
+                        </div>
+                        <div className="saving-value">{saving.value}</div>
+                        <div className="saving-label">{saving.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="alert-item d-flex align-items-center py-2 border-bottom">
-        <div className="alert-icon alert-success me-3">
-          <FontAwesomeIcon icon={faLeaf} />
-        </div>
-        <div className="alert-content">
-          <div className="small fw-bold">CO2 Reduction Target Reached</div>
-          <div className="small text-muted">Yesterday, 18:30:15</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-success">Achievement</span>
-        </div>
-      </div>
-      <div className="alert-item d-flex align-items-center py-2">
-        <div className="alert-icon alert-info me-3">
-          <FontAwesomeIcon icon={faWater} />
-        </div>
-        <div className="alert-content">
-          <div className="small fw-bold">Water Flow Rate Optimized</div>
-          <div className="small text-muted">2025-07-06, 09:15:22</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-info">Info</span>
-        </div>
-      </div>
-    </div>
-  </Col>
-  <Col md={6}>
-    <h6 className="text-muted mb-3">Maintenance Schedule</h6>
-    <div className="maintenance-container">
-      <div className="maintenance-item d-flex align-items-center py-2 border-bottom">
-        <div className="maintenance-icon me-3 text-danger">
-          <FontAwesomeIcon icon={faSolarPanel} />
-        </div>
-        <div className="maintenance-content">
-          <div className="small fw-bold">Panel Cleaning - Pumps #3, #7, #12</div>
-          <div className="small text-muted">Scheduled: 2025-07-10</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-danger">Urgent</span>
-        </div>
-      </div>
-      <div className="maintenance-item d-flex align-items-center py-2 border-bottom">
-        <div className="maintenance-icon me-3 text-primary">
-          <FontAwesomeIcon icon={faChargingStation} />
-        </div>
-        <div className="maintenance-content">
-          <div className="small fw-bold">Battery System Check</div>
-          <div className="small text-muted">Scheduled: 2025-07-15</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-primary">Routine</span>
-        </div>
-      </div>
-      <div className="maintenance-item d-flex align-items-center py-2">
-        <div className="maintenance-icon me-3 text-info">
-          <FontAwesomeIcon icon={faWater} />
-        </div>
-        <div className="maintenance-content">
-          <div className="small fw-bold">Water Filter Replacement</div>
-          <div className="small text-muted">Scheduled: 2025-07-20</div>
-        </div>
-        <div className="ms-auto">
-          <span className="badge bg-info">Planned</span>
-        </div>
-      </div>
-    </div>
-  </Col>
-</Row>
-      </Row>
     </div>
   );
 };

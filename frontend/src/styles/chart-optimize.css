@@ -1,0 +1,98 @@
+/* Maximize chart space utilization */
+.chart-container {
+    height: calc(100vh - 200px) !important;
+    /* Make chart taller */
+    margin: 0;
+    /* Remove margin */
+    padding: 0;
+    /* Remove padding */
+}
+
+/* Optimize the chart header */
+.performance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Compact the metrics display at the bottom */
+.metrics-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.metric-box {
+    flex: 1;
+    padding: 0.5rem;
+    background-color: rgba(30, 41, 59, 0.4);
+    border-radius: 6px;
+    margin: 0 0.25rem;
+}
+
+.metric-box:first-child {
+    margin-left: 0;
+}
+
+.metric-box:last-child {
+    margin-right: 0;
+}
+
+/* Optimize chart controls */
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.chart-controls button {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Make pump selector more compact */
+.pump-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Remove extra space above and below chart */
+.recharts-wrapper {
+    margin: 0 !important;
+}
+
+/* Full height layout */
+.performance-monitoring {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Compact legend */
+.recharts-legend-wrapper {
+    padding-top: 0 !important;
+}
+
+/* Optimize axis labels */
+.recharts-cartesian-axis-tick-value {
+    font-size: 0.7rem;
+}
+
+/* Make fullscreen button more accessible */
+.fullscreen-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 100;
+}
+
+/* Adjust efficiency bar */
+.efficiency-bar {
+    height: 4px; }

@@ -1,248 +1,350 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Button, Card, Spinner, InputGroup } from 'react-bootstrap';
+import { Row, Col, Form, Button, Spinner, InputGroup, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faSave, faGasPump, faTruck, faLightbulb
+import {
+  faSave, faUndo, faGasPump, faTruck, faLightbulb, faMoneyBillWave
 } from '@fortawesome/free-solid-svg-icons';
-import { getPriceSettings, updatePriceSettings } from '../../utils/priceSettingsSimulator';
+
+const getToken = () => localStorage.getItem('token');
+const API_URL = 'http://localhost:5000/api';
+
+const fetchPhFuelPrice = async () => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/fuelprice/philippines`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error('Failed to fetch PH fuel price');
+  return res.json();
+};
+
+const fetchUserFuelPrice = async () => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/user-fuel-price/me`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error('Failed to fetch your fuel price');
+  return res.json();
+};
+
+const updateUserFuelPrice = async (data) => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/user-fuel-price/me`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('Failed to update your fuel price');
+  return res.json();
+};
+
+const resetUserFuelPrice = async () => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/user-fuel-price/me/reset`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error('Failed to reset your fuel price');
+  return res.json();
+};
+
+const fetchElectricityPrice = async () => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/electricity-price/me`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error('Failed to fetch your electricity price');
+  return res.json();
+};
+
+const updateElectricityPrice = async (pricePerKwh) => {
+  const token = getToken();
+  const res = await fetch(`${API_URL}/electricity-price/me`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ pricePerKwh })
+  });
+  if (!res.ok) throw new Error('Failed to update your electricity price');
+  return res.json();
+};
 
 const PricesSettings = ({ showNotification }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    gasolinePrice: 0,
-    dieselPrice: 0,
-    electricityPrice: 0
-  });
+  const [phPrices, setPhPrices] = useState(null);
+  const [phPricesError, setPhPricesError] = useState(false);
+  const [userFuelPrice, setUserFuelPrice] = useState({ gasolinePrice: '', dieselPrice: '' });
+  const [userElectricityPrice, setUserElectricityPrice] = useState('');
   const [errors, setErrors] = useState({});
+  const [resetting, setResetting] = useState(false);
 
-  // Fetch current price settings
-  const fetchPriceSettings = async () => {
-    setLoading(true);
-    try {
-      const settings = await getPriceSettings();
-      setFormData({
-        gasolinePrice: settings.gasolinePrice,
-        dieselPrice: settings.dieselPrice,
-        electricityPrice: settings.electricityPrice
-      });
-      setErrors({});
-    } catch (error) {
-      console.error('Error fetching price settings:', error);
-      showNotification('danger', 'Failed to load price settings.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load settings on component mount
   useEffect(() => {
-    fetchPriceSettings();
-  }, []);
+    const loadAll = async () => {
+      setLoading(true);
+      setPhPricesError(false);
+      try {
+        let ph = null;
+        let userFuel = null;
+        let userElec = null;
 
-  // Handle form input changes
+        // Always fetch user prices first so we can fallback if needed
+        try {
+          userFuel = await fetchUserFuelPrice();
+        } catch (e) {
+          showNotification && showNotification('danger', e.message || 'Failed to load your fuel price.');
+          setLoading(false);
+          return;
+        }
+
+        try {
+          ph = await fetchPhFuelPrice();
+        } catch (e) {
+          setPhPricesError(true);
+          // fallback: set pseudo-ph-prices as those in userFuelPrice (DB)
+          ph = {
+            gasoline: { php: userFuel.gasolinePrice, usd: null },
+            diesel: { php: userFuel.dieselPrice, usd: null },
+            exchange_rate: null
+          };
+        }
+
+        try {
+          userElec = await fetchElectricityPrice();
+        } catch (e) {
+          showNotification && showNotification('danger', e.message || 'Failed to load your electricity price.');
+          setLoading(false);
+          return;
+        }
+
+        setPhPrices(ph);
+        setUserFuelPrice({
+          gasolinePrice: userFuel.gasolinePrice,
+          dieselPrice: userFuel.dieselPrice
+        });
+        setUserElectricityPrice(userElec.pricePerKwh);
+        setErrors({});
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadAll();
+  }, [showNotification]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    // Handle numeric values
-    const numericValue = parseFloat(value);
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: value === '' ? '' : isNaN(numericValue) ? prev[name] : numericValue
-    }));
-    
-    // Clear any error for this field
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+    if (name === 'electricityPrice') {
+      setUserElectricityPrice(value);
+      setErrors((err) => ({ ...err, electricityPrice: '' }));
+    } else {
+      setUserFuelPrice((prev) => ({ ...prev, [name]: value }));
+      setErrors((err) => ({ ...err, [name]: '' }));
     }
   };
 
-  // Validate form
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (formData.gasolinePrice <= 0) {
-      newErrors.gasolinePrice = 'Gasoline price must be greater than 0';
-    }
-    
-    if (formData.dieselPrice <= 0) {
-      newErrors.dieselPrice = 'Diesel price must be greater than 0';
-    }
-    
-    if (formData.electricityPrice <= 0) {
-      newErrors.electricityPrice = 'Electricity price must be greater than 0';
-    }
-    
-    return newErrors;
-  };
-
-  // Handle save button click
   const handleSave = async (e) => {
     e.preventDefault();
-    
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    
+    const errs = {};
+    if (+userFuelPrice.gasolinePrice <= 0) errs.gasolinePrice = 'Must be > 0';
+    if (+userFuelPrice.dieselPrice <= 0) errs.dieselPrice = 'Must be > 0';
+    if (+userElectricityPrice <= 0) errs.electricityPrice = 'Must be > 0';
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
     setSaving(true);
     try {
-      const result = await updatePriceSettings(formData);
-      
-      showNotification('success', 'Price settings updated successfully!');
+      await Promise.all([
+        updateUserFuelPrice({
+          gasolinePrice: +userFuelPrice.gasolinePrice,
+          dieselPrice: +userFuelPrice.dieselPrice
+        }),
+        updateElectricityPrice(+userElectricityPrice)
+      ]);
+      showNotification && showNotification('success', 'Your price settings have been saved!');
     } catch (error) {
-      console.error('Error saving price settings:', error);
-      showNotification('danger', error.message || 'Failed to update price settings.');
+      showNotification && showNotification('danger', error.message || 'Failed to update price settings.');
     } finally {
       setSaving(false);
     }
   };
 
+  const handleResetFuelPrice = async () => {
+    setResetting(true);
+    try {
+      const res = await resetUserFuelPrice();
+      setUserFuelPrice({ gasolinePrice: res.gasolinePrice, dieselPrice: res.dieselPrice });
+      showNotification && showNotification('info', 'Fuel prices reset to latest Philippine market value.');
+    } catch (error) {
+      showNotification && showNotification('danger', error.message || 'Failed to reset fuel price.');
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  // Utility: format price to 2 decimals or empty string if null/undefined
+  const fmt2 = v => v === null || v === undefined ? '' : (+v).toFixed(2);
+
   return (
-    <div>
-      <h5 className="mb-4">Price Settings</h5>
-      
+    <div className="settings-container">
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-3 text-muted">Loading price settings...</p>
+          <p className="mt-3 text-light">Loading price settings...</p>
         </div>
       ) : (
         <>
-          <Card className="mb-4" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}>
-            <Card.Body>
-            <p className="mb-0 text-muted">
-              Configure the prices used for calculating cost savings in the dashboard.
-              These prices will be used to estimate how much money is saved by using
-              solar pumps instead of traditional fuel-based or electric pumps.
+          <h5 className="settings-section-title mb-4">
+            <FontAwesomeIcon icon={faMoneyBillWave} className="me-2 text-primary" />
+            Price Settings Configuration
+          </h5>
+          <div className="important-section mb-4">
+            <p className="mb-0 settings-help-text" style={{ fontSize: '0.95rem', color: '#d1d5db' }}>
+              Configure or override prices used for calculating cost savings. Default Philippine market prices are shown for reference.
+              Your custom prices will be used in all cost calculations.
             </p>
-            </Card.Body>
-          </Card>
-          
-          <Form>
-            <Form.Group as={Row} className="mb-4">
-              <Form.Label column md={3}>
-                <div className="d-flex align-items-center">
-                  <div className="me-2" style={{ width: '32px', textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={faGasPump} />
-                  </div>
+          </div>
+          {phPricesError && (
+            <Alert variant="warning">
+              Could not fetch the latest Philippine market fuel prices.
+              Showing your current saved prices from the database.
+            </Alert>
+          )}
+          <Form onSubmit={handleSave}>
+            <div className="settings-card mb-4">
+              {/* Gasoline */}
+              <Form.Group as={Row} className="mb-4 align-items-center">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faGasPump} className="settings-field-icon" />
                   Gasoline Price
-                </div>
-              </Form.Label>
-              <Col md={9}>
-                <InputGroup>
-                  <Form.Control
-                    type="number"
-                    name="gasolinePrice"
-                    value={formData.gasolinePrice}
-                    onChange={handleChange}
-                    step="0.01"
-                    min="0"
-                    isInvalid={!!errors.gasolinePrice}
-                    placeholder="Enter gasoline price"
-                    style={{ 
-                      background: 'var(--filter-bg)', 
-                      color: 'var(--text-primary)', 
-                      borderColor: errors.gasolinePrice ? 'var(--danger)' : 'var(--filter-border)'
-                    }}
-                  />
-                  <InputGroup.Text style={{ background: 'var(--filter-bg)', borderColor: 'var(--filter-border)' }}>
-                    PHP/L
-                  </InputGroup.Text>
-                </InputGroup>
-                {errors.gasolinePrice && (
-                  <Form.Text className="text-danger">{errors.gasolinePrice}</Form.Text>
-                )}
-              </Col>
-            </Form.Group>
-            
-            <Form.Group as={Row} className="mb-4">
-              <Form.Label column md={3}>
-                <div className="d-flex align-items-center">
-                  <div className="me-2" style={{ width: '32px', textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={faTruck} />
-                  </div>
+                  <span className="required-indicator">*</span>
+                </Form.Label>
+                <Col md={9}>
+                  <InputGroup>
+                    <Form.Control
+                      type="number"
+                      name="gasolinePrice"
+                      value={userFuelPrice.gasolinePrice}
+                      onChange={handleChange}
+                      step="0.01"
+                      min="0"
+                      isInvalid={!!errors.gasolinePrice}
+                      placeholder="Your gasoline price"
+                      className="settings-form-control"
+                    />
+                    <InputGroup.Text>
+                      <strong>PHP/L</strong>
+                    </InputGroup.Text>
+                  </InputGroup>
+                  <Form.Text className="settings-help-text">
+                    Default PH price:&nbsp;
+                    <b>
+                      {phPrices?.gasoline?.php !== null && phPrices?.gasoline?.php !== undefined
+                        ? `${fmt2(phPrices.gasoline.php)} PHP/L`
+                        : '...'}
+                    </b>
+                  </Form.Text>
+                  {errors.gasolinePrice && (
+                    <Form.Text className="text-danger">{errors.gasolinePrice}</Form.Text>
+                  )}
+                </Col>
+              </Form.Group>
+              {/* Diesel */}
+              <Form.Group as={Row} className="mb-4 align-items-center">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faTruck} className="settings-field-icon" />
                   Diesel Price
-                </div>
-              </Form.Label>
-              <Col md={9}>
-                <InputGroup>
-                  <Form.Control
-                    type="number"
-                    name="dieselPrice"
-                    value={formData.dieselPrice}
-                    onChange={handleChange}
-                    step="0.01"
-                    min="0"
-                    isInvalid={!!errors.dieselPrice}
-                    placeholder="Enter diesel price"
-                    style={{ 
-                      background: 'var(--filter-bg)', 
-                      color: 'var(--text-primary)', 
-                      borderColor: errors.dieselPrice ? 'var(--danger)' : 'var(--filter-border)'
-                    }}
-                  />
-                  <InputGroup.Text style={{ background: 'var(--filter-bg)', borderColor: 'var(--filter-border)' }}>
-                    PHP/L
-                  </InputGroup.Text>
-                </InputGroup>
-                {errors.dieselPrice && (
-                  <Form.Text className="text-danger">{errors.dieselPrice}</Form.Text>
-                )}
-              </Col>
-            </Form.Group>
-            
-            <Form.Group as={Row} className="mb-4">
-              <Form.Label column md={3}>
-                <div className="d-flex align-items-center">
-                  <div className="me-2" style={{ width: '32px', textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={faLightbulb} />
-                  </div>
+                  <span className="required-indicator">*</span>
+                </Form.Label>
+                <Col md={9}>
+                  <InputGroup>
+                    <Form.Control
+                      type="number"
+                      name="dieselPrice"
+                      value={userFuelPrice.dieselPrice}
+                      onChange={handleChange}
+                      step="0.01"
+                      min="0"
+                      isInvalid={!!errors.dieselPrice}
+                      placeholder="Your diesel price"
+                      className="settings-form-control"
+                    />
+                    <InputGroup.Text>
+                      <strong>PHP/L</strong>
+                    </InputGroup.Text>
+                  </InputGroup>
+                  <Form.Text className="settings-help-text">
+                    Default PH price:&nbsp;
+                    <b>
+                      {phPrices?.diesel?.php !== null && phPrices?.diesel?.php !== undefined
+                        ? `${fmt2(phPrices.diesel.php)} PHP/L`
+                        : '...'}
+                    </b>
+                  </Form.Text>
+                  {errors.dieselPrice && (
+                    <Form.Text className="text-danger">{errors.dieselPrice}</Form.Text>
+                  )}
+                </Col>
+              </Form.Group>
+              <Row>
+                <Col md={{ span: 9, offset: 3 }}>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={handleResetFuelPrice}
+                    disabled={resetting}
+                  >
+                    <FontAwesomeIcon icon={faUndo} className="me-2" />
+                    {resetting ? 'Resetting...' : 'Reset Fuel Price to PH Market'}
+                  </Button>
+                </Col>
+              </Row>
+              {/* Electricity */}
+              <Form.Group as={Row} className="mb-4 align-items-center mt-4">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faLightbulb} className="settings-field-icon" />
                   Electricity Price
-                </div>
-              </Form.Label>
-              <Col md={9}>
-                <InputGroup>
-                  <Form.Control
-                    type="number"
-                    name="electricityPrice"
-                    value={formData.electricityPrice}
-                    onChange={handleChange}
-                    step="0.01"
-                    min="0"
-                    isInvalid={!!errors.electricityPrice}
-                    placeholder="Enter electricity price"
-                    style={{ 
-                      background: 'var(--filter-bg)', 
-                      color: 'var(--text-primary)', 
-                      borderColor: errors.electricityPrice ? 'var(--danger)' : 'var(--filter-border)'
-                    }}
-                  />
-                  <InputGroup.Text style={{ background: 'var(--filter-bg)', borderColor: 'var(--filter-border)' }}>
-                    PHP/kWh
-                  </InputGroup.Text>
-                </InputGroup>
-                {errors.electricityPrice && (
-                  <Form.Text className="text-danger">{errors.electricityPrice}</Form.Text>
-                )}
-              </Col>
-            </Form.Group>
-            
+                  <span className="required-indicator">*</span>
+                </Form.Label>
+                <Col md={9}>
+                  <InputGroup>
+                    <Form.Control
+                      type="number"
+                      name="electricityPrice"
+                      value={userElectricityPrice}
+                      onChange={handleChange}
+                      step="0.01"
+                      min="0"
+                      isInvalid={!!errors.electricityPrice}
+                      placeholder="Your electricity price"
+                      className="settings-form-control"
+                    />
+                    <InputGroup.Text>
+                      <strong>PHP/kWh</strong>
+                    </InputGroup.Text>
+                  </InputGroup>
+                  <Form.Text className="settings-help-text">
+                    No national default, enter your actual electricity rate per kWh.
+                  </Form.Text>
+                  {errors.electricityPrice && (
+                    <Form.Text className="text-danger">{errors.electricityPrice}</Form.Text>
+                  )}
+                </Col>
+              </Form.Group>
+            </div>
             <Row className="mt-4">
               <Col>
                 <div className="d-flex justify-content-end">
                   <Button
                     variant="primary"
-                    onClick={handleSave}
+                    type="submit"
                     disabled={saving}
-                    style={{ 
-                      background: 'var(--blue-accent)', 
-                      borderColor: 'var(--blue-accent)'
+                    style={{
+                      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      borderColor: '#2563eb',
+                      fontWeight: '500'
                     }}
                   >
                     {saving ? (

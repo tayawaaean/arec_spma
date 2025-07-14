@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserShield, faKey } from '@fortawesome/free-solid-svg-icons';
@@ -7,35 +7,34 @@ const PasswordVerificationModal = ({ show, onHide, onPasswordVerified, actionTyp
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
-  
+
   // Reset state when modal opens/closes
-  React.useEffect(() => {
+  useEffect(() => {
     if (show) {
       setPassword('');
       setError('');
       setIsVerifying(false);
     }
   }, [show]);
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!password) {
       setError('Password is required');
       return;
     }
-    
+
     setIsVerifying(true);
-    
-    // In a real app, you'd verify with the server
-    // For simulation, we'll pass the password to the parent component
-    // which will handle the verification logic
+
+    // In a real app, you might verify with the server here.
+    // In this workflow, we just pass the password up for the parent to use in the API call.
     setTimeout(() => {
       setIsVerifying(false);
       onPasswordVerified(password);
     }, 500);
   };
-  
+
   const getActionText = () => {
     switch (actionType) {
       case 'save':
@@ -63,12 +62,12 @@ const PasswordVerificationModal = ({ show, onHide, onPasswordVerified, actionTyp
       </Modal.Header>
       <Modal.Body style={{ background: 'var(--card-bg)', color: 'var(--text-primary)' }}>
         {error && <Alert variant="danger">{error}</Alert>}
-        
+
         <p>
           You need superadmin privileges to {getActionText()}. 
           Please enter your password to continue.
         </p>
-        
+
         <Form onSubmit={handleSubmit}>
           <Form.Group>
             <Form.Label>Superadmin Password</Form.Label>
@@ -89,6 +88,7 @@ const PasswordVerificationModal = ({ show, onHide, onPasswordVerified, actionTyp
                   color: 'var(--text-primary)', 
                   borderColor: 'var(--filter-border)'
                 }}
+                autoFocus
               />
             </div>
           </Form.Group>

@@ -1,0 +1,195 @@
+.weather-card {
+    background: linear-gradient(to bottom, #1a2332, #0f172a);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    color: #e2e8f0;
+}
+
+.weather-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+}
+
+.temperature-display {
+    font-size: 4rem;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    margin-right: 0.5rem;
+}
+
+.weather-icon-large {
+    font-size: 3.5rem;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+}
+
+.location-info {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.location-name {
+    font-size: 1rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.location-name svg {
+    margin-right: 0.5rem;
+}
+
+.weather-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.metric-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.metric-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    margin-right: 0.75rem;
+}
+
+.forecast-container {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.forecast-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.forecast-day {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.forecast-day:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.forecast-day-name {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.forecast-icon {
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.forecast-temp {
+    font-weight: 600;
+}
+
+/* Icon backgrounds */
+.icon-wind {
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+}
+
+.icon-humidity {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+}
+
+.icon-pressure {
+    background: rgba(167, 139, 250, 0.2);
+    color: #a78bfa;
+}
+
+.icon-uv {
+    background: rgba(244, 63, 94, 0.2);
+    color: #f43f5e;
+}
+
+/* UV Index risk levels */
+.uv-low {
+    color: #4ade80;
+}
+
+.uv-moderate {
+    color: #facc15;
+}
+
+.uv-high {
+    color: #fb923c;
+}
+
+.uv-extreme {
+    color: #ef4444;
+}
+
+/* Refresh button animation */
+.btn-refresh {
+    background: transparent;
+    color: #3b82f6;
+    border: none;
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+    transform: scale(1.05);
+}
+
+.btn-refresh svg {
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover svg {
+    transform: rotate(30deg);
+}
+
+/* Temperature coloring */
+.temp-cold {
+    color: #38bdf8;
+}
+
+.temp-cool {
+    color: #60a5fa;
+}
+
+.temp-warm {
+    color: #fcd34d;
+}
+
+.temp-hot {
+    color: #fb923c;
+}
+
+.temp-extreme {
+    color: #ef4444; }

@@ -1,0 +1,256 @@
+/* Maximize space utilization */
+.sliding-panel-container {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+/* Make navigation tabs more compact */
+.sliding-panel-nav {
+    padding: 0.5rem 0.75rem;
+    margin: 0;
+}
+
+.sliding-panel-nav .nav-link {
+    padding: 0.35rem 0.75rem;
+}
+
+/* Maximize panel content area */
+.panel {
+    padding: 0.75rem;
+}
+
+/* Make content fill available space */
+.panel-content {
+    height: 100%;
+}
+
+/* Reduce spacing in solar stats */
+.solar-stats-content {
+    padding: 0.75rem;
+}
+
+.solar-stats-header {
+    padding: 0.75rem;
+}
+
+.yield-section {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+}
+
+.stats-item {
+    padding: 0.75rem;
+}
+
+.metrics-row {
+    margin-bottom: 0.5rem;
+}
+
+/* Compact weather widget */
+.weather-card {
+    padding: 0.75rem;
+}
+
+.weather-header {
+    margin-bottom: 0.75rem;
+}
+
+.weather-metrics {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.metric-card {
+    padding: 0.5rem;
+}
+
+/* Compact performance chart */
+.chart-container {
+    margin-top: 0;
+}
+
+/* Move slide navigation buttons to top right */
+.panel-nav-buttons {
+    top: 0.5rem;
+    right: 0.5rem;
+    bottom: auto;
+}
+
+.panel-nav-button {
+    width: 32px;
+    height: 32px;
+}
+
+/* Reduce spacing in monthly generation */
+.month-card {
+    padding: 0.75rem;
+}
+
+/* Remove double dashboard-card padding */
+.panel-content .dashboard-card {
+    padding: 0;
+}
+
+/* Use full height */
+.row {
+    height: calc(100vh - 24px);
+}
+
+/* Adjust height for better content display */
+.chart-container {
+    height: calc(100% - 100px);
+}
+
+/* Ensure forecast fits without scrolling */
+.forecast-container {
+    padding-top: 0.75rem;
+}
+
+/* Make tabs full width */
+.sliding-panel-nav .nav-item {
+    flex: 1;
+}
+
+.sliding-panel-nav .nav-link {
+    text-align: center;
+    justify-content: center;
+}
+
+/* Make components adjust their height based on content */
+.solar-stats-content,
+.weather-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Allow scrolling for panels with too much content */
+.panel {
+    overflow-y: auto;
+}
+
+/* Hide scrollbars but maintain functionality */
+.panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* Adjust padding for status badges */
+.panel-content .dashboard-card .badge {
+    padding: 0.35em 0.65em;
+}
+
+/* Make month cards more compact */
+.month-card {
+    padding: 10px;
+}
+
+.month-card-icon {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+}
+
+/* Make the chart stats cards more compact */
+.stat-card {
+    padding: 8px 12px;
+}
+
+/* Performance chart badges */
+.d-flex.align-items-center.mb-3 {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Stats section adjustments */
+.d-flex.justify-content-between.mt-3 {
+    margin-top: 0.5rem !important;
+}
+
+/* Reduce chart legend size */
+.recharts-default-legend {
+    font-size: 0.85rem;
+}
+
+/* Weather widget optimizations */
+.temperature-display {
+    font-size: 3rem;
+}
+
+.weather-icon-large {
+    font-size: 2.5rem;
+}
+
+.forecast-container {
+    margin-top: 0.5rem;
+}
+
+/* Make the dashboard fill the entire viewport */
+.dashboard-container {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Make nav links compact */
+.sliding-panel-nav .nav-link {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Allow overflow scrolling for the whole panel */
+.sliding-panel-content {
+    overflow: hidden;
+}
+
+/* Make monthly generation more compact */
+.mt-4 {
+    margin-top: 1rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 0.75rem !important;
+}
+
+/* Chart container takes up all available space */
+.chart-container {
+    height: calc(100% - 80px) !important;
+}
+
+/* Better spacing for solar stats */
+.metrics-col {
+    padding-right: 0.5rem;
+}
+
+.stats-grid {
+    gap: 0.5rem;
+}
+
+.card-body {
+    padding: 0.75rem;
+}
+
+/* Fix user info display */
+.user-info,
+.datetime-display {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Make performance chart badges more compact */
+.badge.py-2 {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+/* Increase the contrast in panel buttons */
+.panel-nav-button {
+    background-color: rgba(59, 130, 246, 0.9); }

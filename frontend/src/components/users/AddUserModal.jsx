@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import { addUser, getUserTypes } from '../../utils/userDataSimulator';
+import { userService } from '../../services/userService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faSpinner, faUserPlus, faUser, faKey, faShield 
+} from '@fortawesome/free-solid-svg-icons';
+import '../../styles/modal.css';
 
 const AddUserModal = ({ show, onHide, onUserAdded }) => {
   const [formData, setFormData] = useState({
@@ -12,7 +17,12 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const userTypes = getUserTypes();
+  const [userTypes, setUserTypes] = useState(['user', 'admin', 'superadmin']);
+  
+  useEffect(() => {
+    // Fetch user types if needed
+    setUserTypes(userService.getUserTypes());
+  }, []);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,8 +73,8 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
     
     setIsSubmitting(true);
     try {
-      // Simulate API call with local function
-      const newUser = addUser(formData);
+      // Call actual API endpoint
+      await userService.createUser(formData);
       
       // Reset form and close modal
       setFormData({ username: '', password: '', userType: 'user' });
@@ -72,7 +82,18 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
       onHide();
     } catch (error) {
       console.error('Error adding user:', error);
-      setSubmitError('Error creating user. Please try again.');
+      
+      // Handle different error types
+      if (error.response) {
+        // Server responded with an error status
+        if (error.response.status === 409) {
+          setSubmitError('Username already exists. Please try a different username.');
+        } else {
+          setSubmitError(error.response.data?.message || 'Error creating user. Please try again.');
+        }
+      } else {
+        setSubmitError('Error connecting to server. Please try again later.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -92,27 +113,30 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
       backdrop="static"
       keyboard={false}
       centered
+      className="custom-modal"
     >
-      <Modal.Header style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)' }}>
-        <Modal.Title style={{ color: 'var(--text-primary)' }}>Add New User</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>
+          <FontAwesomeIcon icon={faUserPlus} className="me-2 text-primary" />
+          Add New User
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ background: 'var(--card-bg)', color: 'var(--text-primary)' }}>
+      <Modal.Body>
         {submitError && <Alert variant="danger">{submitError}</Alert>}
         
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>
+              <FontAwesomeIcon icon={faUser} className="me-2 text-primary" />
+              Username
+            </Form.Label>
             <Form.Control
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               isInvalid={!!errors.username}
-              style={{ 
-                background: 'var(--filter-bg)', 
-                color: 'var(--text-primary)', 
-                borderColor: errors.username ? 'var(--danger)' : 'var(--filter-border)'
-              }}
+              placeholder="Enter username"
             />
             {errors.username && (
               <Form.Text className="text-danger">{errors.username}</Form.Text>
@@ -120,18 +144,17 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
           </Form.Group>
           
           <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>
+              <FontAwesomeIcon icon={faKey} className="me-2 text-primary" />
+              Password
+            </Form.Label>
             <Form.Control
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               isInvalid={!!errors.password}
-              style={{ 
-                background: 'var(--filter-bg)', 
-                color: 'var(--text-primary)', 
-                borderColor: errors.password ? 'var(--danger)' : 'var(--filter-border)'
-              }}
+              placeholder="Enter password"
             />
             {errors.password && (
               <Form.Text className="text-danger">{errors.password}</Form.Text>
@@ -139,17 +162,15 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
           </Form.Group>
           
           <Form.Group className="mb-3">
-            <Form.Label>User Type</Form.Label>
+            <Form.Label>
+              <FontAwesomeIcon icon={faShield} className="me-2 text-primary" />
+              User Type
+            </Form.Label>
             <Form.Select
               name="userType"
               value={formData.userType}
               onChange={handleChange}
               isInvalid={!!errors.userType}
-              style={{ 
-                background: 'var(--filter-bg)', 
-                color: 'var(--text-primary)', 
-                borderColor: errors.userType ? 'var(--danger)' : 'var(--filter-border)'
-              }}
             >
               {userTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -161,15 +182,11 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--card-border)' }}>
+      <Modal.Footer>
         <Button 
           variant="outline-secondary" 
           onClick={handleCancel}
-          style={{ 
-            background: 'var(--filter-bg)', 
-            color: 'var(--text-primary)', 
-            borderColor: 'var(--filter-border)'
-          }}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>
@@ -177,12 +194,13 @@ const AddUserModal = ({ show, onHide, onUserAdded }) => {
           variant="primary" 
           onClick={handleSubmit}
           disabled={isSubmitting}
-          style={{ 
-            background: 'var(--blue-accent)', 
-            borderColor: 'var(--blue-accent)'
-          }}
         >
-          {isSubmitting ? 'Adding...' : 'Add User'}
+          {isSubmitting ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} spin className="me-2 spin-icon" />
+              Adding...
+            </>
+          ) : 'Add User'}
         </Button>
       </Modal.Footer>
     </Modal>

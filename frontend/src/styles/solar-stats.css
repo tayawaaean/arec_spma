@@ -1,0 +1,389 @@
+:root {
+    --primary-blue: #3b82f6;
+    --light-blue: #60a5fa;
+    --cyan: #38bdf8;
+    --yellow: #eab308;
+    --green: #10b981;
+    --red: #ef4444;
+    --orange: #f59e0b;
+
+    --dark-bg-1: #0f172a;
+    --dark-bg-2: #1a2332;
+    --dark-card: rgba(15, 23, 42, 0.8);
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* ...existing root and header styles... */
+
+.solar-stats-card {
+    background: linear-gradient(135deg, var(--dark-bg-2) 0%, var(--dark-bg-1) 100%);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-light);
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.solar-stats-header {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background-color: rgba(0, 0, 0, 0.18);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.solar-stats-content {
+    padding: 1rem 1rem 0.8rem 1rem;
+}
+
+/* Info icon with hover effect */
+.info-icon {
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    cursor: help;
+}
+
+.info-icon:hover {
+    color: var(--primary-blue);
+    transform: scale(1.1);
+}
+
+/* Section spacing */
+.yield-section {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.metrics-row {
+    margin-bottom: 0.5rem;
+}
+
+/* Yield card styling */
+.yield-card {
+    height: 100%;
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.08));
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-subtle);
+}
+
+.yield-card:hover {
+    background: rgba(0, 0, 0, 0.22);
+    transform: translateY(-2px);
+}
+
+.yield-label {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.yield-value {
+    font-size: clamp(2.5rem, 7vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(90deg, var(--primary-blue), var(--light-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    margin-bottom: 0.18rem;
+}
+
+.yield-unit {
+    color: var(--light-blue);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+}
+
+.yield-comparison {
+    font-size: 1.1rem;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    padding: 0.2rem 0.7rem;
+    background-color: rgba(16, 185, 129, 0.11);
+    border-radius: 18px;
+}
+
+.yield-comparison svg {
+    margin-right: 0.4rem;
+}
+
+/* Stats grid styling */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.6rem;
+    height: 100%;
+}
+
+.stats-item {
+    min-width: 0;
+    padding: 0.8rem 0.7rem;
+    border-radius: 10px;
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.07));
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stats-item:hover {
+    background: rgba(0, 0, 0, 0.22);
+    transform: translateY(-2px);
+}
+
+.stats-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats-value {
+    font-size: clamp(1.5rem, 4vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.1rem;
+}
+
+.stats-value small {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    font-weight: normal;
+    margin-left: 0.2rem;
+}
+
+.stats-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.1rem;
+}
+
+.stats-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-bottom: 0.1rem;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+}
+
+.stats-item:hover .stats-icon {
+    transform: scale(1.1);
+}
+
+.stats-label {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+/* Metrics cards styling */
+.metrics-card {
+    background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.06));
+    border-radius: 10px;
+    height: 100%;
+    padding: 0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+}
+
+.metrics-card:hover {
+    background: rgba(0, 0, 0, 0.17);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0.7rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.header-icon {
+    color: var(--cyan);
+    margin-right: 0.65rem;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 1.1rem 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Water pumped specific styles */
+.metrics-values {
+    display: flex;
+    justify-content: space-around;
+    gap: 1.1rem;
+}
+
+.metric-block {
+    text-align: center;
+}
+
+.metric-value {
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 0.1rem;
+    color: var(--text-light);
+}
+
+.metric-label {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Savings specific styles */
+.savings-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
+}
+
+.saving-row {
+    display: flex;
+    align-items: center;
+    padding: 0.2rem 0;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.saving-row:hover {
+    transform: translateX(3px);
+}
+
+.saving-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.8rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.saving-row:hover .saving-icon {
+    transform: scale(1.1);
+}
+
+.saving-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-right: 0.7rem;
+    min-width: 80px;
+}
+
+.saving-label {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .yield-value {
+        font-size: clamp(1.5rem, 6vw, 2.3rem);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .stats-label,
+    .header-title,
+    .metric-label,
+    .saving-label {
+        font-size: 1rem;
+    }
+
+    .metrics-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .solar-stats-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .yield-card {
+        margin-bottom: 1rem;
+    }
+
+    .metrics-values {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .metric-block {
+        margin-bottom: 1rem;
+    }
+
+    .metric-block:last-child {
+        margin-bottom: 0;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+}

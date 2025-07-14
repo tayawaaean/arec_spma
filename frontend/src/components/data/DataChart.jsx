@@ -14,6 +14,12 @@ import {
   Area
 } from 'recharts';
 
+// Helper to build a readable label: "Pump 2 - SomeTown"
+function getPumpDisplayName(pump) {
+  if (!pump) return '';
+  return `Pump ${pump.solarPumpNumber}${pump.address?.municipality ? ' - ' + pump.address.municipality : ''}`;
+}
+
 const DataChart = ({ 
   pumpData, 
   pumps, 
@@ -42,16 +48,16 @@ const DataChart = ({
       
       // Add data for each pump and metric
       Object.entries(pumpData).forEach(([pumpId, dataArray]) => {
-        const pumpIdNum = parseInt(pumpId);
-        const pump = pumps.find(p => p.id === pumpIdNum);
-        const pumpName = pump ? pump.name : `Pump ${pumpId}`;
+        // Use string for id so works with both numbers and strings
+        const pump = pumps.find(p => String(p.id) === String(pumpId));
+        const pumpLabel = getPumpDisplayName(pump) || `Pump ${pumpId}`;
         
         // Find matching data point
         const matchingPoint = dataArray.find(item => item.timestamp === timestamp);
         
         if (matchingPoint) {
           selectedMetrics.forEach(metric => {
-            dataPoint[`${pumpName}_${metric}`] = matchingPoint[metric];
+            dataPoint[`${pumpLabel}_${metric}`] = matchingPoint[metric];
           });
         }
       });
@@ -63,7 +69,6 @@ const DataChart = ({
   // Format timestamp based on interval
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
-    
     switch (interval) {
       case 'hourly':
         return `${date.getHours()}:00`;
@@ -79,7 +84,7 @@ const DataChart = ({
   };
 
   const chartData = prepareChartData();
-  
+
   // If no data, show a message
   if (chartData.length === 0) {
     return <div className="text-center py-5">No data available for the selected parameters.</div>;
@@ -136,32 +141,26 @@ const DataChart = ({
                 // Extract metric name from combined key
                 const parts = value.split('_');
                 const metric = parts.pop();
-                const pumpName = parts.join('_');
-                
+                const pumpLabel = parts.join('_');
                 const metricObj = metrics.find(m => m.value === metric);
                 const label = metricObj ? metricObj.label : metric;
-                
-                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpName} - ${label}`}</span>;
+                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpLabel} - ${label}`}</span>;
               }}
               iconType="circle"
               wrapperStyle={{ paddingTop: 10 }}
             />
-            
             {/* Generate bars for each pump and metric */}
             {Object.entries(pumpData).map(([pumpId, dataArray]) => {
-              const pumpIdNum = parseInt(pumpId);
-              const pump = pumps.find(p => p.id === pumpIdNum);
-              const pumpName = pump ? pump.name : `Pump ${pumpId}`;
-              
+              const pump = pumps.find(p => String(p.id) === String(pumpId));
+              const pumpLabel = getPumpDisplayName(pump) || `Pump ${pumpId}`;
               return selectedMetrics.map(metric => {
                 const metricObj = metrics.find(m => m.value === metric);
                 const axisId = ['flow', 'water_volume'].includes(metric) ? 'right' : 'left';
-                
                 return (
                   <Bar
-                    key={`${pumpId}_${metric}`}
-                    dataKey={`${pumpName}_${metric}`}
-                    name={`${pumpName}_${metric}`}
+                    key={`${pumpLabel}_${metric}`}
+                    dataKey={`${pumpLabel}_${metric}`}
+                    name={`${pumpLabel}_${metric}`}
                     fill={metricObj ? metricObj.color : '#888888'}
                     yAxisId={axisId}
                     radius={[2, 2, 0, 0]}
@@ -220,36 +219,29 @@ const DataChart = ({
             />
             <Legend 
               formatter={(value) => {
-                // Extract metric name from combined key
                 const parts = value.split('_');
                 const metric = parts.pop();
-                const pumpName = parts.join('_');
-                
+                const pumpLabel = parts.join('_');
                 const metricObj = metrics.find(m => m.value === metric);
                 const label = metricObj ? metricObj.label : metric;
-                
-                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpName} - ${label}`}</span>;
+                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpLabel} - ${label}`}</span>;
               }}
               iconType="circle"
               wrapperStyle={{ paddingTop: 10 }}
             />
-            
             {/* Generate areas for each pump and metric */}
             {Object.entries(pumpData).map(([pumpId, dataArray]) => {
-              const pumpIdNum = parseInt(pumpId);
-              const pump = pumps.find(p => p.id === pumpIdNum);
-              const pumpName = pump ? pump.name : `Pump ${pumpId}`;
-              
+              const pump = pumps.find(p => String(p.id) === String(pumpId));
+              const pumpLabel = getPumpDisplayName(pump) || `Pump ${pumpId}`;
               return selectedMetrics.map(metric => {
                 const metricObj = metrics.find(m => m.value === metric);
                 const axisId = ['flow', 'water_volume'].includes(metric) ? 'right' : 'left';
-                
                 return (
                   <Area
-                    key={`${pumpId}_${metric}`}
+                    key={`${pumpLabel}_${metric}`}
                     type="monotone"
-                    dataKey={`${pumpName}_${metric}`}
-                    name={`${pumpName}_${metric}`}
+                    dataKey={`${pumpLabel}_${metric}`}
+                    name={`${pumpLabel}_${metric}`}
                     stroke={metricObj ? metricObj.color : '#888888'}
                     fill={`url(#color-${metric})`}
                     strokeWidth={2}
@@ -302,36 +294,29 @@ const DataChart = ({
             />
             <Legend 
               formatter={(value) => {
-                // Extract metric name from combined key
                 const parts = value.split('_');
                 const metric = parts.pop();
-                const pumpName = parts.join('_');
-                
+                const pumpLabel = parts.join('_');
                 const metricObj = metrics.find(m => m.value === metric);
                 const label = metricObj ? metricObj.label : metric;
-                
-                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpName} - ${label}`}</span>;
+                return <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}>{`${pumpLabel} - ${label}`}</span>;
               }}
               iconType="circle"
               wrapperStyle={{ paddingTop: 10 }}
             />
-            
             {/* Generate lines for each pump and metric */}
             {Object.entries(pumpData).map(([pumpId, dataArray]) => {
-              const pumpIdNum = parseInt(pumpId);
-              const pump = pumps.find(p => p.id === pumpIdNum);
-              const pumpName = pump ? pump.name : `Pump ${pumpId}`;
-              
+              const pump = pumps.find(p => String(p.id) === String(pumpId));
+              const pumpLabel = getPumpDisplayName(pump) || `Pump ${pumpId}`;
               return selectedMetrics.map(metric => {
                 const metricObj = metrics.find(m => m.value === metric);
                 const axisId = ['flow', 'water_volume'].includes(metric) ? 'right' : 'left';
-                
                 return (
                   <Line
-                    key={`${pumpId}_${metric}`}
+                    key={`${pumpLabel}_${metric}`}
                     type="monotone"
-                    dataKey={`${pumpName}_${metric}`}
-                    name={`${pumpName}_${metric}`}
+                    dataKey={`${pumpLabel}_${metric}`}
+                    name={`${pumpLabel}_${metric}`}
                     stroke={metricObj ? metricObj.color : '#888888'}
                     strokeWidth={2}
                     dot={false}

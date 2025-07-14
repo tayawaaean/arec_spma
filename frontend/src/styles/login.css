@@ -4,6 +4,9 @@
     width: 100%;
     overflow: hidden;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Animated Background */
@@ -66,16 +69,24 @@
 .login-card-container {
     perspective: 1000px;
     animation: fadeIn 1s ease-out forwards;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
 }
 
 .login-card {
-    background-color: rgba(22, 27, 34, 0.85);
-    border: 1px solid rgba(48, 54, 61, 0.5);
+    background-color: rgba(22, 27, 34, 0.95) !important;
+    border: 1px solid rgba(48, 54, 61, 0.5) !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-    border-radius: 15px;
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px !important;
     transform-style: preserve-3d;
     transition: transform 0.6s, box-shadow 0.6s;
+    overflow: visible !important;
+    /* Make sure content isn't cut off */
+    padding-bottom: 20px;
+    /* Add some bottom padding */
 }
 
 .login-card:hover {
@@ -84,7 +95,7 @@
 }
 
 .login-title {
-    color: white;
+    color: white !important;
     font-weight: 700;
     font-size: 2.2rem;
     margin-bottom: 0.5rem;
@@ -92,7 +103,7 @@
 }
 
 .login-subtitle {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6) !important;
     font-size: 1rem;
     margin-bottom: 2rem;
 }
@@ -146,9 +157,10 @@
     animation: orbit 15s linear infinite;
 }
 
-/* Form Elements */
+/* Form Elements - Fixed for Bootstrap */
 .login-input-group {
     position: relative;
+    margin-bottom: 1.25rem;
 }
 
 .login-input-icon {
@@ -159,77 +171,114 @@
     color: rgba(255, 255, 255, 0.4);
     transition: color 0.3s;
     z-index: 10;
+    pointer-events: none;
 }
 
 .login-input {
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    border-radius: 8px;
-    padding: 0.8rem 0.8rem 0.8rem 2.8rem;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 0.8rem 0.8rem 0.8rem 2.8rem !important;
     transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+    height: auto !important;
+    font-size: 1rem !important;
 }
 
 .login-input:focus {
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-    background-color: rgba(255, 255, 255, 0.08);
-    outline: none;
-    color: white;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    outline: none !important;
+    color: white !important;
 }
 
-.login-input:focus+.login-input-icon,
-.login-input:focus~.login-input-icon {
+.login-input:focus+.login-input-icon {
     color: #3b82f6;
 }
 
 .login-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.4) !important;
 }
 
 .login-input.is-invalid {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
 }
 
 .invalid-feedback {
-    color: #ef4444;
+    color: #ef4444 !important;
     font-size: 0.85rem;
     margin-top: 0.25rem;
     margin-left: 0.5rem;
+    display: block;
+}
+
+/* Fixed checkbox styling */
+.login-checkbox {
+    margin-bottom: 0;
 }
 
 .login-checkbox label {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.8) !important;
     font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.login-checkbox input[type="checkbox"] {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    width: 16px;
+    height: 16px;
+}
+
+.login-checkbox input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
 }
 
 .login-forgot-link {
-    color: rgba(59, 130, 246, 0.8);
+    color: #3b82f6 !important;
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s;
 }
 
 .login-forgot-link:hover {
-    color: #3b82f6;
+    color: #60a5fa !important;
     text-decoration: underline;
 }
 
+/* Improved button styling */
 .login-button {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    border: none !important;
     width: 100%;
-    padding: 0.8rem 1rem;
-    font-weight: 600;
-    border-radius: 8px;
+    padding: 0.8rem 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
     transition: transform 0.3s, box-shadow 0.3s;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+    color: white !important;
+    font-size: 1rem !important;
+    display: block !important;
+    /* Ensure button is displayed as block */
+    opacity: 1 !important;
+    /* Make sure button is visible */
+    position: relative !important;
+    /* Reset any position issues */
+    visibility: visible !important;
+    /* Explicitly set visibility */
+    z-index: 10 !important;
+    /* Higher z-index to prevent being hidden */
 }
 
+/* Fixed button hover and active states */
 .login-button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
 }
 
 .login-button:active:not(:disabled) {
@@ -237,13 +286,24 @@
 }
 
 .login-button:disabled {
-    opacity: 0.7;
+    opacity: 0.7 !important;
     cursor: not-allowed;
+}
+
+/* Add clear margin below remember me row */
+.remember-row {
+    margin-bottom: 1.5rem !important;
+    /* Add more space before the button */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .login-card-footer {
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
+    margin-top: 1.5rem;
+    /* Add space above the footer */
 }
 
 .login-error {
@@ -253,6 +313,7 @@
     border-radius: 8px;
     border-left: 3px solid #ef4444;
     font-size: 0.9rem;
+    margin-bottom: 1.5rem;
 }
 
 /* Animations */
@@ -305,7 +366,7 @@
 /* Responsive Adjustments */
 @media (max-width: 576px) {
     .login-card {
-        border-radius: 10px;
+        border-radius: 10px !important;
     }
 
     .login-card .card-body {
@@ -315,21 +376,57 @@
     .login-title {
         font-size: 1.8rem;
     }
+
+    .logo-container {
+        width: 60px;
+        height: 60px;
+    }
+
+    .sun-icon {
+        font-size: 2rem;
+    }
 }
 
-/* Login Card - Fixed Background */
-.card.login-card,
-.login-card,
-.login-card-container .card {
-    background-color: rgba(22, 27, 34, 0.85) !important;
-    /* Dark background with !important to override Bootstrap */
-    border: 1px solid rgba(48, 54, 61, 0.5) !important;
-    color: white !important;
-}
-
+/* Bootstrap overrides for Card */
 .card.login-card .card-body,
 .login-card .card-body,
 .login-card-container .card .card-body {
+    padding: 2.5rem !important;
     background-color: transparent !important;
     color: white !important;
+    overflow: visible !important;
+    /* Make sure content doesn't get cut off */
+    height: auto !important;
+    /* Allow card to expand to fit content */
+}
+
+/* Form row adjustments */
+.login-card .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.login-card .col {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Fix for checkbox alignment */
+.form-check-input {
+    margin-top: 0.25rem !important;
+}
+
+/* Add form class to fix layout issues */
+.login-form {
+    margin-bottom: 0;
+    position: relative;
+    z-index: 5;
+    width: 100%;
+}
+
+/* Card and container scrolling fixes */
+.login-card-container,
+.login-card,
+.card-body {
+    overflow: visible !important;
 }

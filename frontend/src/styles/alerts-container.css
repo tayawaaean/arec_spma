@@ -1,0 +1,135 @@
+/* CSS for Alerts Container */
+
+.alerts-section {
+    margin-top: 1rem;
+}
+
+.alerts-container {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.alerts-header h6 {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+
+.count-badge {
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.6rem;
+}
+
+.alerts-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 250px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.alerts-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.alerts-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.alert-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.alert-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.warning-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.success-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.info-icon {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+}
+
+.alert-details {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.alert-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.25rem;
+    color: #e2e8f0;
+}
+
+.alert-time {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.alerts-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.view-all-btn {
+    background: transparent;
+    color: #3b82f6;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-all-btn:hover {
+    color: #60a5fa;
+    transform: translateY(-1px); }

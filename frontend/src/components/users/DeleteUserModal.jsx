@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
-import { deleteUser } from '../../utils/userDataSimulator';
+import { userService } from '../../services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faSpinner, faUserSlash } from '@fortawesome/free-solid-svg-icons';
+import '../../styles/modal.css';
 
 const DeleteUserModal = ({ show, onHide, user, onUserDeleted }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -16,18 +17,19 @@ const DeleteUserModal = ({ show, onHide, user, onUserDeleted }) => {
         throw new Error('No user selected for deletion');
       }
       
-      // Simulate API call with local function
-      const deletedUser = deleteUser(user.id);
+      // Call actual API endpoint
+      await userService.deleteUser(user._id);
       
-      if (deletedUser) {
-        onUserDeleted();
-        onHide();
-      } else {
-        throw new Error('Failed to delete user');
-      }
+      onUserDeleted();
+      onHide();
     } catch (error) {
       console.error('Error deleting user:', error);
-      setError('Error deleting user. Please try again.');
+      
+      if (error.response) {
+        setError(error.response.data?.message || 'Error deleting user. Please try again.');
+      } else {
+        setError('Error connecting to server. Please try again later.');
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -42,35 +44,35 @@ const DeleteUserModal = ({ show, onHide, user, onUserDeleted }) => {
       backdrop="static"
       keyboard={false}
       centered
+      className="custom-modal"
     >
-      <Modal.Header style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)' }}>
-        <Modal.Title style={{ color: 'var(--text-primary)' }}>Delete User</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>
+          <FontAwesomeIcon icon={faUserSlash} className="me-2 text-danger" />
+          Delete User
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ background: 'var(--card-bg)', color: 'var(--text-primary)' }}>
+      <Modal.Body>
         {error && <Alert variant="danger">{error}</Alert>}
         
         <div className="text-center mb-4">
-          <FontAwesomeIcon 
-            icon={faExclamationTriangle} 
-            size="3x" 
-            className="text-warning mb-3"
-          />
-          <h5>Are you sure you want to delete this user?</h5>
-          <p className="text-muted">
-            You are about to delete the user <strong>{user.username}</strong> with role <strong>{user.userType}</strong>.
+          <div className="delete-warning-icon">
+            <FontAwesomeIcon icon={faExclamationTriangle} />
+          </div>
+          <h5 className="fw-bold mb-3">Are you sure you want to delete this user?</h5>
+          <p className="mb-1">
+            You are about to delete the user <span className="fw-bold text-light">{user.username}</span> with role <span className="fw-bold text-light">{user.userType}</span>.
+          </p>
+          <p className="text-danger fw-semibold">
             This action cannot be undone.
           </p>
         </div>
       </Modal.Body>
-      <Modal.Footer style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--card-border)' }}>
+      <Modal.Footer>
         <Button 
           variant="outline-secondary" 
           onClick={onHide}
-          style={{ 
-            background: 'var(--filter-bg)', 
-            color: 'var(--text-primary)', 
-            borderColor: 'var(--filter-border)'
-          }}
+          disabled={isDeleting}
         >
           Cancel
         </Button>
@@ -79,7 +81,12 @@ const DeleteUserModal = ({ show, onHide, user, onUserDeleted }) => {
           onClick={handleDelete}
           disabled={isDeleting}
         >
-          {isDeleting ? 'Deleting...' : 'Delete User'}
+          {isDeleting ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} spin className="me-2 spin-icon" />
+              Deleting...
+            </>
+          ) : 'Delete User'}
         </Button>
       </Modal.Footer>
     </Modal>

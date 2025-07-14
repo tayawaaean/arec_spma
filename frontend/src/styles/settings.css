@@ -1,0 +1,432 @@
+/* Enhanced Settings Styles */
+.enhanced-settings-card {
+    background-color: rgba(22, 27, 34, 0.85);
+    border: 1px solid rgba(48, 54, 61, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.enhanced-settings-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.enhanced-settings-card .card-header {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+    padding: 1rem 1.5rem;
+}
+
+.settings-card-icon {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-default {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.status-custom {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+/* Modern form controls */
+.settings-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-form-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.settings-form-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-radius: 8px;
+    margin-right: 1rem;
+}
+
+.settings-input-group {
+    position: relative;
+}
+
+.settings-form-control {
+    background-color: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 8px;
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.settings-form-control:focus {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+
+.settings-input-group-text {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    color: #94a3b8;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 0.5rem 1rem;
+}
+
+/* Enhanced buttons */
+.settings-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.settings-btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+}
+
+.settings-btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+}
+
+.settings-btn-secondary {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+}
+
+.settings-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Enhanced settings navigation */
+.settings-nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.settings-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.settings-nav-link:not(.active) {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+}
+
+.settings-nav-link.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+    color: white;
+}
+
+.settings-nav-link:not(.active):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(3px);
+}
+
+.settings-nav-icon {
+    width: 24px;
+    margin-right: 12px; }
+/* Import animate.css for pre-built animations */
+@import 'animate.css/animate.min.css';
+
+/* Settings header icon */
+.settings-header-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+/* Enhanced modal styling */
+.settings-modal .modal-content {
+    background-color: #161b22;
+    border: 1px solid rgba(48, 54, 61, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.settings-modal-header {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+    padding: 1.25rem 1.5rem;
+}
+
+.settings-modal-header .modal-title {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.settings-modal-body {
+    background-color: #161b22;
+    color: #e2e8f0;
+    padding: 1.5rem;
+}
+
+.settings-modal-footer {
+    background-color: rgba(15, 23, 42, 0.4);
+    border-top: 1px solid rgba(48, 54, 61, 0.5);
+    padding: 1rem 1.5rem;
+}
+
+.modal-icon-container {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(245, 158, 11, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.modal-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+
+    70% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+/* Coming soon content */
+.coming-soon-container {
+    padding: 3rem 2rem;
+}
+
+.coming-soon-icon {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: rgba(59, 130, 246, 0.7);
+}
+
+.settings-alert {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Animated transitions */
+.settings-sidebar {
+    border-right: 1px solid rgba(48, 54, 61, 0.5);
+    background-color: rgba(15, 23, 42, 0.4);
+}
+
+.settings-content {
+    animation: fadeInRight 0.5s;
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Tab content transitions */
+.tab-pane {
+    animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+/* Improved text visibility for settings pages */
+.settings-container h4,
+.settings-container h5,
+.settings-container h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.settings-container .text-muted {
+    color: #b0b8c4 !important;
+    /* Brighter than the default muted text */
+}
+
+.settings-container .card {
+    background-color: #111827;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+/* Form labels with improved visibility */
+.settings-form-label {
+    color: #ffffff;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+/* Section titles */
+.settings-section-title {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Field names */
+.settings-field-name {
+    color: #e2e8f0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+/* Help text with better visibility */
+.settings-help-text {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* Improve form control text */
+.settings-form-control {
+    color: #ffffff !important;
+    font-weight: 500;
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+}
+
+.settings-form-control:focus {
+    background-color: rgba(17, 24, 39, 0.8) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Input group text */
+.input-group-text {
+    background-color: rgba(31, 41, 55, 0.8) !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Field icons */
+.settings-field-icon {
+    margin-right: 8px;
+    color: #3b82f6;
+}
+
+/* Required field indicator */
+.required-indicator {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+/* Settings card with enhanced contrast */
+.settings-card {
+    background-color: #0f172a;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.settings-nav-item .nav-link {
+    color: #e2e8f0 !important;
+}
+
+.settings-nav-item .nav-link.active {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Status badges with better contrast */
+.status-badge {
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.status-default {
+    background-color: rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+}
+
+.status-custom {
+    background-color: rgba(16, 185, 129, 0.3);
+    color: #34d399;
+}
+
+/* Highlight important sections */
+.important-section {
+    background-color: rgba(59, 130, 246, 0.05);
+    border-left: 3px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+}

@@ -1,0 +1,107 @@
+/* Sliding Panel Styles */
+.sliding-panel-container {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 0;
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sliding-panel-nav {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
+    margin: 0 -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.sliding-panel-nav .nav-link {
+    color: #94a3b8;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.sliding-panel-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sliding-panel-nav .nav-link.active {
+    background-color: #0066ff;
+    color: white;
+}
+
+.sliding-panel-content {
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+}
+
+.sliding-panels {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel {
+    width: 50%;
+    height: 100%;
+    padding: 1.5rem 1.5rem 1rem;
+    overflow-y: auto;
+}
+
+.panel-nav-buttons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.panel-nav-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(59, 130, 246, 0.8);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.panel-nav-button:hover {
+    background-color: #0066ff;
+    transform: scale(1.1);
+}
+
+/* Remove scrollbars but keep functionality */
+.panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sliding-panel-nav {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .panel {
+        padding: 1rem;
+    } }

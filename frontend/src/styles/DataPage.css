@@ -1,0 +1,934 @@
+/* DataPage.css - Compact, modern dashboard styles for Data.jsx */
+
+/* Layout and background */
+.data-page-root,
+.container-fluid {
+    background: #181c23 !important;
+    color: #e7eaf1;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+}
+
+/* Card backgrounds and dashboard panels */
+.dashboard-card,
+.filter-card,
+.stat-card {
+    background: #20242e !important;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.06);
+    color: #e7eaf1;
+    transition: box-shadow 0.18s;
+    position: relative;
+    overflow: visible !important;
+    margin-bottom: 1rem;
+}
+
+/* Headings */
+h4,
+h5,
+h6 {
+    color: #f1f6fa;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.2em;
+    font-size: 1.07rem;
+}
+
+/* Filter controls grid - compact */
+.filter-controls-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+}
+
+/* Individual filter group - compact */
+.filter-group {
+    background: #232735;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    padding: 0.4rem 0.7rem 0.4rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: unset;
+    height: auto;
+    border: 1px solid #232941;
+    width: 100%;
+    transition: box-shadow 0.13s, border-color 0.13s;
+    box-sizing: border-box;
+}
+
+.filter-group:hover,
+.filter-group:focus-within {
+    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.08);
+    border-color: #3b82f6;
+}
+
+/* Remove icon background, keep only icon */
+.filter-icon-bg {
+    background: none !important;
+    border-radius: 0;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.1rem;
+    box-shadow: none;
+    padding: 0;
+}
+
+.accent-blue,
+.accent-green,
+.accent-purple {
+    background: none !important;
+}
+
+.filter-icon {
+    color: #3b82f6;
+    font-size: 0.95rem;
+}
+
+.filter-label {
+    color: #e7eaf1;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 0.12rem;
+    line-height: 1.1;
+}
+
+/* Input fields and select boxes */
+.filter-select,
+.date-picker {
+    background: #25293a !important;
+    color: #f1f6fa !important;
+    border: 1px solid #232735 !important;
+    border-radius: 6px !important;
+    font-size: 0.93rem !important;
+    height: 26px !important;
+    min-width: 75px;
+    max-width: 120px;
+    padding: 0.1rem 0.45rem;
+    margin-bottom: 2px;
+    transition: border-color 0.13s, box-shadow 0.13s;
+}
+
+.filter-select:focus,
+.date-picker:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    outline: none;
+}
+
+/* Date presets - tighter */
+.date-presets {
+    display: flex;
+    gap: 0.1rem;
+    margin-top: 0.1rem;
+}
+
+.date-preset-btn {
+    color: #4f8dff;
+    font-size: 0.86rem;
+    font-weight: 500;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    padding: 0 0.05rem;
+}
+
+.date-preset-btn:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.date-range-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.date-range-separator {
+    color: #a6adc8;
+    font-size: 0.94rem;
+    font-weight: 500;
+    margin: 0 0.18rem;
+}
+
+/* Pump/Metric dropdowns - smaller */
+.custom-dropdown .dropdown-menu,
+.metrics-dropdown-menu,
+.pumps-dropdown-menu {
+    min-width: 160px !important;
+    max-width: 220px !important;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 7px 6px !important;
+    background: #232735 !important;
+    border: 1px solid #20242e !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.17);
+    color: #e7eaf1;
+    border-radius: 8px !important;
+    font-size: 0.97rem;
+    z-index: 1051 !important;
+}
+
+.metrics-dropdown-menu .d-flex,
+.pumps-dropdown-menu .d-flex {
+    padding: 4px 0 !important;
+    border-radius: 4px;
+    margin-bottom: 1px !important;
+    font-size: 0.97rem;
+}
+
+.metrics-dropdown-menu .d-flex:hover,
+.pumps-dropdown-menu .d-flex:hover {
+    background: #27324a !important;
+}
+
+.metrics-dropdown-menu .form-check,
+.pumps-dropdown-menu .form-check {
+    margin-bottom: 0;
+}
+
+.custom-dropdown .dropdown-toggle-btn {
+    background: #232735 !important;
+    color: #e7eaf1;
+    border: 1px solid #232735 !important;
+    font-size: 0.97rem;
+    min-height: 28px;
+    padding: 0.18rem 0.6rem;
+}
+
+.metric-color {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 5px;
+}
+
+/* Quick Stats cards */
+.stat-card {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    transition: box-shadow 0.13s;
+    box-shadow: 0 1px 7px 0 rgba(59, 130, 246, 0.07);
+    border-radius: 10px;
+    margin-bottom: 0.7rem;
+}
+
+.stat-card:hover {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 3px 12px rgba(59, 130, 246, 0.10);
+}
+
+.stat-label {
+    font-size: 0.97rem;
+    color: #b0b8d1;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    color: #f1f6fa;
+    font-weight: 700;
+}
+
+.stat-change {
+    font-size: 0.93rem;
+}
+
+.stat-icon-wrapper {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.3rem;
+    background: #232735;
+    box-shadow: 0 1px 4px rgba(59, 130, 246, 0.05);
+}
+
+.voltage-bg {
+    background: #22334a !important;
+}
+
+.power-bg {
+    background: #2b2320 !important;
+}
+
+.flow-bg {
+    background: #1a2c34 !important;
+}
+
+.energy-bg {
+    background: #172a1f !important;
+}
+
+.stat-change.positive {
+    color: #16c784 !important;
+}
+
+.stat-change.negative {
+    color: #ef4444 !important;
+}
+
+/* Chart section */
+.chart-header {
+    border-bottom: 1px solid #232735;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.3rem;
+}
+
+.chart-type-toggle .btn {
+    background: #232735;
+    color: #b0b8d1;
+    border: none;
+    font-size: 0.97rem;
+    transition: background 0.13s, color 0.13s;
+    padding: 0.15rem 0.6rem;
+}
+
+.chart-type-toggle .btn-primary {
+    background: #3b82f6 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.chart-settings-menu {
+    min-width: 120px;
+    background: #232735 !important;
+    color: #e7eaf1 !important;
+    border-radius: 7px;
+    font-size: 0.97rem;
+}
+
+.chart-settings-menu .dropdown-item {
+    color: #e7eaf1 !important;
+}
+
+.chart-settings-menu .dropdown-divider {
+    border-color: #232735;
+}
+
+/* Chart container must have height for recharts! */
+.chart-container,
+.recharts-responsive-container {
+    min-height: 180px;
+    height: 180px !important;
+}
+
+/* Chart empty/loading states */
+.chart-loading-state,
+.chart-empty-state {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.empty-icon {
+    font-size: 1.2rem;
+    color: #3b82f6;
+    margin-bottom: 0.4rem;
+}
+
+.empty-icon.sm {
+    font-size: 1rem;
+    color: #3b82f6;
+}
+
+.spinner-container {
+    min-height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Stats Table */
+.table.stats-table {
+    background: #181c23;
+    color: #e7eaf1;
+    border-radius: 8px;
+    font-size: 0.97rem;
+}
+
+.table.stats-table th,
+.table.stats-table td {
+    border-color: #232735 !important;
+    padding: 6px 9px !important;
+}
+
+.table.stats-table th {
+    background: #1d212a !important;
+    color: #b0b8d1 !important;
+    font-weight: 600;
+    border-top: none !important;
+    font-size: 0.97rem;
+}
+
+.stat-highlight {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.pump-name {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pump-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #3b82f6;
+    border-radius: 50%;
+    margin-right: 3px;
+}
+
+.table.stats-table tbody tr:hover {
+    background: #22252f !important;
+}
+
+/* Buttons - compact */
+.btn-primary,
+.btn-outline-secondary {
+    font-size: 0.97rem;
+    font-weight: 600;
+    padding: 0.22rem 0.8rem;
+    border-radius: 6px !important;
+    letter-spacing: 0.01em;
+    transition: background 0.13s, color 0.13s;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #3b82f6, #2563eb) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(90deg, #2563eb, #1e40af) !important;
+    color: #fff !important;
+}
+
+.btn-outline-secondary {
+    background: #232735 !important;
+    color: #e7eaf1 !important;
+    border: 1px solid #232735 !important;
+}
+
+.btn-outline-secondary:hover {
+    background: #20242e !important;
+    color: #fff !important;
+}
+
+/* Responsive tweaks */
+@media (max-width: 900px) {
+    .filter-controls-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .filter-group {
+        padding: 0.5rem 0.5rem;
+    }
+
+    .dashboard-card,
+    .filter-card,
+    .stat-card {
+        border-radius: 8px;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .chart-container,
+    .recharts-responsive-container {
+        min-height: 110px;
+        height: 110px !important;
+    }
+
+    .table.stats-table {
+        font-size: 0.93rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .filter-controls-container {
+        grid-template-columns: 1fr !important;
+        gap: 0.4rem;
+    }
+
+    .filter-group {
+        padding: 0.4rem 0.4rem;
+    }
+
+    .dashboard-card,
+    .filter-card,
+    .stat-card {
+        border-radius: 6px;
+    }
+
+    .stat-value {
+        font-size: 0.92rem;
+    }
+
+    .chart-container,
+    .recharts-responsive-container {
+        min-height: 70px;
+        height: 70px !important;
+    }
+}
+/* Enhanced Selector Styles */
+
+/* Custom dropdown hover effects */
+.hover-highlight:hover {
+    background: rgba(59, 130, 246, 0.08) !important;
+    transition: background 0.15s ease-in-out;
+}
+
+/* Icon backgrounds */
+.filter-icon-bg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.15);
+    transition: all 0.2s ease;
+}
+
+.filter-icon-bg:hover {
+    background: rgba(59, 130, 246, 0.25);
+    transform: scale(1.05);
+}
+
+/* Filter labels */
+.filter-label {
+    color: #f1f6fa;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+/* Dropdown animations */
+.dropdown-menu.show {
+    animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 3px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.5);
+}
+
+/* Checkbox styling improvements */
+.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.form-check-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Button focus states */
+.btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Disabled state improvements */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Improved card hover state */
+.metric-selector-card:hover,
+.pump-selector-card:hover {
+    box-shadow: 0 4px 16px 0 rgba(50, 80, 200, 0.08);
+    transition: box-shadow 0.2s ease;
+}
+
+/* Better spacing for pagination */
+.pagination-controls {
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0.5rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        max-width: 100vw;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    .metric-selector-card,
+    .pump-selector-card {
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+    }
+
+    .filter-label {
+        font-size: 1rem;
+    }
+}
+
+/* Loading state (optional) */
+.selector-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.selector-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(35, 39, 53, 0.8);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Better color indicators for metrics */
+.metric-color-indicator {
+    transition: all 0.2s ease;
+}
+
+.metric-color-indicator:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+/* Add these CSS rules to fix the dropdown positioning issues */
+
+/* 1. Ensure parent containers don't clip dropdowns */
+.filter-container,
+.dashboard-filters,
+.main-content {
+    overflow: visible !important;
+}
+
+/* 2. Fix z-index layering for all dropdowns */
+.dropdown-menu,
+.metrics-dropdown-menu,
+.pumps-dropdown-menu,
+.date-selector-dropdown,
+.data-interval-dropdown {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+/* 3. Specific fix for your MetricSelector dropdown */
+.metrics-dropdown .dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+    margin-top: 7px !important;
+}
+
+/* 4. Fix for date-related dropdowns */
+.date-selector-dropdown,
+.data-interval-dropdown {
+    z-index: 9999 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    min-width: 100% !important;
+}
+
+/* 5. Ensure dropdown containers have proper positioning */
+.position-relative {
+    position: relative !important;
+}
+
+/* 6. Fix for React Bootstrap dropdown issues */
+.dropdown-toggle::after {
+    display: none;
+    /* Remove default Bootstrap arrow if conflicting */
+}
+
+/* 7. Prevent parent overflow issues */
+.row,
+.col,
+.container-fluid {
+    overflow: visible !important;
+}
+
+
+/* 9. Alternative positioning fix */
+.dropdown-menu.show {
+    position: fixed !important;
+    z-index: 9999 !important;
+    transform: none !important;
+}
+
+/* 10. Fix for mobile/responsive issues */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: fixed !important;
+        top: auto !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+}/* Parent containers shouldn't clip dropdowns */
+.filter-container,
+.dashboard-filters,
+.main-content {
+    overflow: visible !important;
+}
+
+/* High z-index for dropdowns */
+.dropdown-menu,
+.metrics-dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important; }
+/* Add or update these for compact filter controls */
+.filter-controls-container.compact {
+    gap: 0.25rem;
+    margin-bottom: 0.3rem;
+}
+
+.filter-group.compact {
+    padding: 0.22rem 0.35rem 0.22rem 0.35rem;
+    min-height: unset;
+    height: auto;
+    border-radius: 6px;
+    font-size: 0.94rem;
+    background: #232735;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    border: 1px solid #232941;
+}
+
+/* Make icons and fields smaller */
+.filter-icon-bg {
+    min-width: 24px !important;
+    min-height: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 15px !important;
+}
+
+.filter-label {
+    font-size: 0.94rem !important;
+    margin-bottom: 2px !important;
+}
+
+.filter-select,
+.date-picker {
+    height: 28px !important;
+    font-size: 0.94rem !important;
+    padding: 0.05rem 0.4rem !important; }
+        .interval-selector-card {
+            background: #232735;
+            border-radius: 14px;
+            padding: 1.05rem 1.2rem 1.05rem 1rem;
+            box-shadow: 0 2px 8px 0 rgba(50, 80, 200, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border: 1.5px solid #232941;
+            min-width: 220px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    
+        .interval-select {
+            background: #20242e !important;
+            border: 1.5px solid #20242e !important;
+            color: #f1f6fa !important;
+            font-weight: 600 !important;
+            min-height: 44px !important;
+            border-radius: 8px !important;
+            padding: 0.48rem 1.1rem !important;
+            font-size: 1.08rem !important;
+            width: 100% !important;
+            outline: none !important;
+            box-shadow: none !important;     }
+                        /* Custom DatePicker input styling */
+                        .custom-date-input {
+                            background: #20242e !important;
+                            border: 1.5px solid #20242e !important;
+                            color: #f1f6fa !important;
+                            font-weight: 600 !important;
+                            min-height: 44px !important;
+                            border-radius: 8px !important;
+                            padding: 0.48rem 1.1rem !important;
+                            font-size: 1.08rem !important;
+                            width: 100% !important;
+                            outline: none !important;
+                            box-shadow: none !important;
+                            transition: border 0.13s, box-shadow 0.13s;
+                        }
+            
+                        .custom-date-input:focus {
+                            border: 1.5px solid #3b82f6 !important;
+                            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+                        }
+            
+                        /* Custom DatePicker calendar popup styling */
+                        .react-datepicker-popper {
+                            z-index: 9999 !important;
+                            position: absolute !important;
+                        }
+            
+                        .react-datepicker {
+                            background: #232735 !important;
+                            color: #f1f6fa !important;
+                            border-radius: 12px !important;
+                            border: 1.5px solid #3b82f6 !important;
+                            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16);
+                            padding: 0.7rem 0.2rem 0.5rem 0.2rem;
+                        }
+            
+                        .react-datepicker__header {
+                            background: #232735 !important;
+                            border-bottom: 1px solid #20242e !important;
+                            color: #f1f6fa !important;
+                            border-top-left-radius: 12px !important;
+                            border-top-right-radius: 12px !important;
+                            padding-top: 0.7rem;
+                        }
+            
+                        .react-datepicker__current-month,
+                        .react-datepicker-time__header,
+                        .react-datepicker-year-header {
+                            color: #b0b8d1 !important;
+                            font-weight: 600 !important;
+                            font-size: 1.08rem !important;
+                        }
+            
+                        .react-datepicker__day,
+                        .react-datepicker__day-name {
+                            color: #e7eaf1 !important;
+                            width: 2.1rem !important;
+                            height: 2.1rem !important;
+                            line-height: 2.1rem !important;
+                            font-size: 1rem !important;
+                            border-radius: 7px !important;
+                            transition: background 0.18s;
+                        }
+            
+                        .react-datepicker__day--selected,
+                        .react-datepicker__day--in-selecting-range,
+                        .react-datepicker__day--in-range {
+                            background: #3b82f6 !important;
+                            color: #fff !important;
+                            border-radius: 7px !important;
+                        }
+            
+                        .react-datepicker__day--keyboard-selected {
+                            background: #2563eb !important;
+                            color: #fff !important;
+                        }
+            
+                        .react-datepicker__day:hover {
+                            background: #27324a !important;
+                            color: #fff !important;
+                        }
+            
+                        .react-datepicker__navigation {
+                            top: 1.2rem !important;
+                        }
+            
+                        .react-datepicker__navigation-icon::before {
+                            border-color: #b0b8d1 !important;
+                        }
+            
+                        .react-datepicker__day--today {
+                            border: 1px solid #3b82f6 !important;
+                            font-weight: 600 !important;
+                        }
+            
+                        /* Hide input border on calendar popup */
+                        .react-datepicker__input-container input:focus {
+                            outline: none !important;
+                            box-shadow: none !important; }
+                                                        .pump-selector-card {
+                                                            background: #232735;
+                                                            border-radius: 14px;
+                                                            padding: 1.05rem 1.2rem 1.05rem 1rem;
+                                                            box-shadow: 0 2px 8px 0 rgba(50, 80, 200, 0.04);
+                                                            display: flex;
+                                                            flex-direction: column;
+                                                            align-items: flex-start;
+                                                            border: 1.5px solid #232941;
+                                                            min-width: 220px;
+                                                            width: 100%;
+                                                            height: 100%;
+                                                            position: relative;
+                                                        }
+                            
+                                                        .pumps-dropdown-menu {
+                                                            background: #232735 !important;
+                                                            border: 1.5px solid #3b82f6 !important;
+                                                            border-radius: 13px !important;
+                                                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22) !important;
+                                                            min-width: 240px !important;
+                                                            max-width: 340px !important;
+                                                            max-height: 340px;
+                                                            overflow-y: auto;
+                                                            z-index: 9999 !important;
+                                                            padding: 15px 14px 10px 14px !important;
+                                                            position: absolute !important;
+                                                            top: 100% !important;
+                                                            left: 0 !important;
+                                                            margin-top: 7px !important;
+                                                            width: 100% !important;
+                                                        }
+                            
+                                                        .pumps-dropdown-menu .d-flex {
+                                                            padding: 4px 0 !important;
+                                                            border-radius: 4px;
+                                                            font-size: 1rem;
+                                                        }
+                            
+                                                        .pumps-dropdown-menu .d-flex:hover {
+                                                            background: #27324a !important;                             }

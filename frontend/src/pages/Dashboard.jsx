@@ -1,83 +1,80 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Dropdown, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import SolarStats from '../components/dashboard/SolarStats';
 import WeatherWidget from '../components/dashboard/WeatherWidget';
 import PerformanceChart from '../components/dashboard/PerformanceChart';
 import MonthlyGeneration from '../components/dashboard/MonthlyGeneration';
+import SlidingPanel from '../components/dashboard/SlidingPanel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faSolarPanel, faChartLine, faCloudSun, faCalendarDay
+} from '@fortawesome/free-solid-svg-icons';
+
+// Import the sliding panel styles
+import '../styles/sliding-panel.css';
 
 const Dashboard = () => {
-  const [lastRefreshed, setLastRefreshed] = useState(new Date());
-  const [isLoading, setIsLoading] = useState(false);
-  const [timeRange, setTimeRange] = useState('month');
+  // Keep timeRange with a fixed value since we removed the selector
+  const timeRange = 'month';
   const currentUser = 'Dextiee';
-  const currentDateTime = '2025-07-08 03:45:25';
+  const currentDateTime = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setLastRefreshed(new Date());
-      setIsLoading(false);
-    }, 1000);
-  };
+  // Strip down components to just their content
+  const solarStatsContent = (
+    <div className="panel-content">
+      <SolarStats 
+        timeRange={timeRange} 
+        currentUser={currentUser} 
+        currentDateTime={currentDateTime}
+      />
+    </div>
+  );
+  
+  const performanceChartContent = (
+    <div className="panel-content">
+      <PerformanceChart timeRange={timeRange} />
+    </div>
+  );
+  
+  const weatherWidgetContent = (
+    <div className="panel-content">
+      <WeatherWidget />
+    </div>
+  );
+  
+  const monthlyGenerationContent = (
+    <div className="panel-content">
+      <MonthlyGeneration />
+    </div>
+  );
 
   return (
     <Container fluid className="dashboard-container p-0">
-      <div className="dashboard-header d-flex justify-content-between align-items-center mb-3">
-        <h4>Solar Pump Dashboard</h4>
-        <div className="dashboard-controls d-flex align-items-center">
-          <small className="text-muted me-3">
-            Last updated: {lastRefreshed.toLocaleTimeString()}
-          </small>
-          
-          <Dropdown className="me-2">
-            <Dropdown.Toggle variant="outline-secondary" size="sm" id="time-range">
-              <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
-              {timeRange === 'day' ? 'Today' : 
-               timeRange === 'week' ? 'This Week' : 'This Month'}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setTimeRange('day')}>Today</Dropdown.Item>
-              <Dropdown.Item onClick={() => setTimeRange('week')}>This Week</Dropdown.Item>
-              <Dropdown.Item onClick={() => setTimeRange('month')}>This Month</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          
-          <Button 
-            variant="outline-primary" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={isLoading}
-          >
-            <FontAwesomeIcon 
-              icon={faSync} 
-              className={isLoading ? "fa-spin me-2" : "me-2"} 
-            />
-            Refresh
-          </Button>
-        </div>
-      </div>
       
-      <Row className="mb-3">
-        <Col md={8}>
-          <SolarStats 
-            timeRange={timeRange} 
-            currentUser={currentUser} 
-            currentDateTime={currentDateTime}
-          />
-        </Col>
-        <Col md={4}>
-          <WeatherWidget />
-        </Col>
-      </Row>
       
       <Row>
-        <Col md={8}>
-          <PerformanceChart timeRange={timeRange} />
+        {/* First sliding panel (Solar Stats & Performance Chart) */}
+        <Col lg={8}>
+          <SlidingPanel
+            leftComponent={solarStatsContent}
+            rightComponent={performanceChartContent}
+            leftTitle="Solar Stats"
+            rightTitle="Performance"
+            leftIcon={faSolarPanel}
+            rightIcon={faChartLine}
+          />
         </Col>
-        <Col md={4}>
-          <MonthlyGeneration />
+        
+        {/* Second sliding panel (Weather Widget & Monthly Generation) */}
+        <Col lg={4}>
+          <SlidingPanel
+            leftComponent={weatherWidgetContent}
+            rightComponent={monthlyGenerationContent}
+            leftTitle="Weather"
+            rightTitle="Monthly Generation"
+            leftIcon={faCloudSun}
+            rightIcon={faCalendarDay}
+          />
         </Col>
       </Row>
     </Container>

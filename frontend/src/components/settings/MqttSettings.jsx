@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Button, Card, Spinner } from 'react-bootstrap';
+import { Row, Col, Form, Button, Spinner, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faSave, faUndo, faCheck, faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { faSave, faUndo, faCheck, faExclamationTriangle, faLink, faUser, faKey, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import PasswordVerificationModal from './PasswordVerificationModal';
 import ConfirmationModal from './ConfirmationModal';
-import { getMqttSettings, updateMqttSettings, resetToDefaultMqttSettings } from '../../utils/mqttSettingsSimulator';
+import { getMqttSettings, updateMqttCredentials, resetToDefaultMqttSettings } from '../../utils/mqttApi';
 
 const MqttSettings = ({ showNotification }) => {
   const [loading, setLoading] = useState(true);
@@ -19,8 +17,6 @@ const MqttSettings = ({ showNotification }) => {
   const [originalBrokerUrl, setOriginalBrokerUrl] = useState('');
   const [isUsingDefaults, setIsUsingDefaults] = useState(true);
   const [errors, setErrors] = useState({});
-  
-  // Modals control
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
   const [actionType, setActionType] = useState(''); // 'save' or 'reset'
@@ -46,73 +42,44 @@ const MqttSettings = ({ showNotification }) => {
     }
   };
 
-  // Load settings on component mount
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  useEffect(() => { fetchSettings(); }, []);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear any error for this field
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  // Validate form
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.brokerUrl.trim()) {
-      newErrors.brokerUrl = 'Broker URL is required';
-    } else if (!formData.brokerUrl.match(/^(mqtt|mqtts|ws|wss):\/\/.+/)) {
+    if (!formData.brokerUrl.trim()) newErrors.brokerUrl = 'Broker URL is required';
+    else if (!formData.brokerUrl.match(/^(mqtt|mqtts|ws|wss):\/\/.+/))
       newErrors.brokerUrl = 'Invalid broker URL format (must start with mqtt://, mqtts://, ws://, or wss://)';
-    }
-    
-    // Only validate username/password if they are provided or if this is a new configuration
-    if (formData.username && formData.username.length < 3) {
+    if (formData.username && formData.username.length < 3)
       newErrors.username = 'Username must be at least 3 characters';
-    }
-    
-    if (formData.password && formData.password.length < 6) {
+    if (formData.password && formData.password.length < 6)
       newErrors.password = 'Password must be at least 6 characters';
-    }
-    
     return newErrors;
   };
 
-  // Handle save button click
   const handleSave = (e) => {
     e.preventDefault();
-    
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
     setActionType('save');
     setShowPasswordModal(true);
   };
 
-  // Handle reset to default button click
   const handleResetClick = () => {
     setActionType('reset');
     setShowResetConfirmModal(true);
   };
 
-  // Handle password verification success
   const handlePasswordVerified = async (password) => {
     setShowPasswordModal(false);
-    
     if (actionType === 'save') {
       await saveSettings(password);
     } else if (actionType === 'reset') {
@@ -125,15 +92,15 @@ const MqttSettings = ({ showNotification }) => {
   const saveSettings = async (adminPassword) => {
     setSaving(true);
     try {
-      const result = await updateMqttSettings(
-        formData.brokerUrl,
-        formData.username,
-        formData.password,
-        adminPassword
-      );
-      
+      await updateMqttCredentials({
+        brokerUrl: formData.brokerUrl,
+        username: formData.username,
+        password: formData.password,
+        // If your backend expects adminPassword, include it here
+        // adminPassword
+      });
       showNotification('success', 'MQTT connection settings updated successfully!');
-      fetchSettings(); // Refresh settings
+      fetchSettings();
     } catch (error) {
       console.error('Error saving MQTT settings:', error);
       showNotification('danger', error.message || 'Failed to update MQTT settings.');
@@ -146,10 +113,9 @@ const MqttSettings = ({ showNotification }) => {
   const resetSettings = async (adminPassword) => {
     setSaving(true);
     try {
-      const result = await resetToDefaultMqttSettings(adminPassword);
-      
+      await resetToDefaultMqttSettings();
       showNotification('success', 'MQTT settings have been reset to default values.');
-      fetchSettings(); // Refresh settings
+      fetchSettings();
     } catch (error) {
       console.error('Error resetting MQTT settings:', error);
       showNotification('danger', error.message || 'Failed to reset MQTT settings.');
@@ -159,13 +125,16 @@ const MqttSettings = ({ showNotification }) => {
   };
 
   return (
-    <div>
-      <h5 className="mb-4">MQTT Connection Configuration</h5>
+    <div className="settings-container">
+      <h5 className="settings-section-title mb-4">
+        <FontAwesomeIcon icon={faNetworkWired} className="me-2 text-primary" /> 
+        MQTT Connection Configuration
+      </h5>
       
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
-          <p className="mt-3 text-muted">Loading MQTT configuration...</p>
+          <p className="mt-3 text-light">Loading MQTT configuration...</p>
         </div>
       ) : (
         <>
@@ -173,7 +142,9 @@ const MqttSettings = ({ showNotification }) => {
             className="mb-4"
             style={{ 
               backgroundColor: isUsingDefaults ? 'rgba(59, 130, 246, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-              borderColor: isUsingDefaults ? 'var(--blue-accent)' : 'var(--icon-co2)'
+              borderColor: isUsingDefaults ? '#3b82f6' : '#10b981',
+              borderWidth: '2px',
+              borderRadius: '8px'
             }}
           >
             <Card.Body>
@@ -184,12 +155,12 @@ const MqttSettings = ({ showNotification }) => {
                   size="lg"
                 />
                 <div>
-                  <h6 className="mb-1 text-muted">
+                  <h6 className="mb-1" style={{color: '#ffffff', fontWeight: '600'}}>
                     {isUsingDefaults 
                       ? 'Using Default Configuration' 
                       : 'Using Custom Configuration'}
                   </h6>
-                  <p className="mb-0 text-muted">
+                  <p className="mb-0" style={{color: '#d1d5db'}}>
                     {isUsingDefaults 
                       ? 'MQTT is currently using the default credentials from environment variables.' 
                       : 'MQTT is using custom credentials set by an administrator.'}
@@ -199,135 +170,137 @@ const MqttSettings = ({ showNotification }) => {
             </Card.Body>
           </Card>
           
-          <Form>
-            <Form.Group as={Row} className="mb-3">
-              <Form.Label column md={3}>Broker URL</Form.Label>
-              <Col md={9}>
-                <Form.Control
-                  type="text"
-                  name="brokerUrl"
-                  value={formData.brokerUrl}
-                  onChange={handleChange}
-                  isInvalid={!!errors.brokerUrl}
-                  placeholder="mqtt://example.com:1883"
-                  style={{ 
-                    background: 'var(--filter-bg)', 
-                    color: 'var(--text-primary)', 
-                    borderColor: errors.brokerUrl ? 'var(--danger)' : 'var(--filter-border)'
-                  }}
-                />
-                {errors.brokerUrl && (
-                  <Form.Text className="text-danger">{errors.brokerUrl}</Form.Text>
-                )}
-                <Form.Text className="text-muted">
-                  Format: mqtt://hostname:port or mqtts://hostname:port
-                </Form.Text>
-              </Col>
-            </Form.Group>
-            
-            <Form.Group as={Row} className="mb-3">
-              <Form.Label column md={3}>Username</Form.Label>
-              <Col md={9}>
-                <Form.Control
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  isInvalid={!!errors.username}
-                  placeholder="MQTT username"
-                  style={{ 
-                    background: 'var(--filter-bg)', 
-                    color: 'var(--text-primary)', 
-                    borderColor: errors.username ? 'var(--danger)' : 'var(--filter-border)'
-                  }}
-                />
-                {errors.username && (
-                  <Form.Text className="text-danger">{errors.username}</Form.Text>
-                )}
-                <Form.Text className="text-muted">
-                  {isUsingDefaults 
-                    ? 'Leave blank to keep using the default username.' 
-                    : 'Leave blank to keep the existing username.'}
-                </Form.Text>
-              </Col>
-            </Form.Group>
-            
-            <Form.Group as={Row} className="mb-3">
-              <Form.Label column md={3}>Password</Form.Label>
-              <Col md={9}>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  isInvalid={!!errors.password}
-                  placeholder="MQTT password"
-                  style={{ 
-                    background: 'var(--filter-bg)', 
-                    color: 'var(--text-primary)', 
-                    borderColor: errors.password ? 'var(--danger)' : 'var(--filter-border)'
-                  }}
-                />
-                {errors.password && (
-                  <Form.Text className="text-danger">{errors.password}</Form.Text>
-                )}
-                <Form.Text className="text-muted">
-                  {isUsingDefaults 
-                    ? 'Leave blank to keep using the default password.' 
-                    : 'Leave blank to keep the existing password.'}
-                </Form.Text>
-              </Col>
-            </Form.Group>
-            
-            <Row className="mt-4">
-              <Col>
-                <div className="d-flex justify-content-end">
-                  <Button
-                    variant="outline-secondary"
-                    className="me-2"
-                    onClick={handleResetClick}
-                    disabled={saving || isUsingDefaults}
-                    style={{ 
-                      background: 'var(--filter-bg)', 
-                      color: 'var(--text-primary)', 
-                      borderColor: 'var(--filter-border)'
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faUndo} className="me-2" />
-                    Reset to Default
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleSave}
-                    disabled={saving}
-                    style={{ 
-                      background: 'var(--blue-accent)', 
-                      borderColor: 'var(--blue-accent)'
-                    }}
-                  >
-                    {saving ? (
-                      <>
-                        <Spinner
-                          as="span"
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden="true"
-                          className="me-2"
-                        />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faSave} className="me-2" />
-                        Save Configuration
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
+          <div className="settings-card">
+            <Form>
+              <Form.Group as={Row} className="mb-4 align-items-center">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faLink} className="settings-field-icon" />
+                  Broker URL
+                  <span className="required-indicator">*</span>
+                </Form.Label>
+                <Col md={9}>
+                  <Form.Control
+                    type="text"
+                    name="brokerUrl"
+                    value={formData.brokerUrl}
+                    onChange={handleChange}
+                    isInvalid={!!errors.brokerUrl}
+                    placeholder="mqtt://example.com:1883"
+                    className="settings-form-control"
+                  />
+                  {errors.brokerUrl && (
+                    <Form.Text className="text-danger fw-bold">{errors.brokerUrl}</Form.Text>
+                  )}
+                  <Form.Text className="settings-help-text">
+                    Format: mqtt://hostname:port or mqtts://hostname:port
+                  </Form.Text>
+                </Col>
+              </Form.Group>
+              
+              <Form.Group as={Row} className="mb-4 align-items-center">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faUser} className="settings-field-icon" />
+                  Username
+                </Form.Label>
+                <Col md={9}>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    isInvalid={!!errors.username}
+                    placeholder="MQTT username"
+                    className="settings-form-control"
+                  />
+                  {errors.username && (
+                    <Form.Text className="text-danger fw-bold">{errors.username}</Form.Text>
+                  )}
+                  <Form.Text className="settings-help-text">
+                    {isUsingDefaults 
+                      ? 'Leave blank to keep using the default username.' 
+                      : 'Leave blank to keep the existing username.'}
+                  </Form.Text>
+                </Col>
+              </Form.Group>
+              
+              <Form.Group as={Row} className="mb-4 align-items-center">
+                <Form.Label column md={3} className="settings-field-name">
+                  <FontAwesomeIcon icon={faKey} className="settings-field-icon" />
+                  Password
+                </Form.Label>
+                <Col md={9}>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    isInvalid={!!errors.password}
+                    placeholder="MQTT password"
+                    className="settings-form-control"
+                  />
+                  {errors.password && (
+                    <Form.Text className="text-danger fw-bold">{errors.password}</Form.Text>
+                  )}
+                  <Form.Text className="settings-help-text">
+                    {isUsingDefaults 
+                      ? 'Leave blank to keep using the default password.' 
+                      : 'Leave blank to keep the existing password.'}
+                  </Form.Text>
+                </Col>
+              </Form.Group>
+              
+              <Row className="mt-4">
+                <Col>
+                  <div className="d-flex justify-content-end">
+                    <Button
+                      variant="outline-secondary"
+                      className="me-3"
+                      onClick={handleResetClick}
+                      disabled={saving || isUsingDefaults}
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        color: '#ffffff',
+                        fontWeight: '500'
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faUndo} className="me-2" />
+                      Reset to Default
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleSave}
+                      disabled={saving}
+                      style={{ 
+                        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', 
+                        borderColor: '#2563eb',
+                        fontWeight: '500'
+                      }}
+                    >
+                      {saving ? (
+                        <>
+                          <Spinner
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                            className="me-2"
+                          />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <FontAwesomeIcon icon={faSave} className="me-2" />
+                          Save Configuration
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Form>
+          </div>
         </>
       )}
       

@@ -1,294 +1,532 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Card, Button, Table, Badge, Form, InputGroup } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faPencilAlt, faTrash, faSearch, faFilter, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faPlus, faPen, faTrashAlt, faSearch, faFilter, faMapMarkerAlt, 
+  faSync, faFileExport, faSpinner, faFileCsv, faInfoCircle,
+  faBolt, faWater, faCalendarAlt, faChevronLeft, faChevronRight
+} from '@fortawesome/free-solid-svg-icons';
 import { DashboardContext } from '../App';
 import AddPumpModal from '../components/pumps/AddPumpModal';
 import EditPumpModal from '../components/pumps/EditPumpModal';
 import DeletePumpModal from '../components/pumps/DeletePumpModal';
-
-// Sample data - would normally come from API
-const SAMPLE_PUMPS = [
-  {
-    _id: "68671e4ababf10848c8f9c61",
-    solarPumpNumber: 1,
-    model: "SPX-1500",
-    power: "1.5kW",
-    acInputVoltage: "220V",
-    pvOperatingVoltage: "200V",
-    openCircuitVoltage: "240V",
-    outlet: "2 inch",
-    maxHead: "35m",
-    maxFlow: "10m3/h",
-    solarPanelConfig: "6x300W",
-    lat: 14.5995,
-    lng: 120.9842,
-    address: {
-      barangay: "Quiapo",
-      municipality: "Manila",
-      region: "Metro Manila",
-      country: "Philippines"
-    },
-    timeInstalled: "2025-07-01T08:00:00.000Z",
-    status: "active",
-    createdBy: "superadmin",
-    updatedBy: "superadmin",
-    createdAt: "2025-07-04T00:20:26.631Z",
-    updatedAt: "2025-07-04T00:20:26.631Z",
-  },
-  {
-    _id: "68671e4ababf10848c8f9c62",
-    solarPumpNumber: 2,
-    model: "SPX-2000",
-    power: "2.0kW",
-    acInputVoltage: "220V",
-    pvOperatingVoltage: "220V",
-    openCircuitVoltage: "260V",
-    outlet: "2.5 inch",
-    maxHead: "40m",
-    maxFlow: "15m3/h",
-    solarPanelConfig: "8x300W",
-    lat: 10.3157,
-    lng: 123.8854,
-    address: {
-      barangay: "Downtown",
-      municipality: "Cebu City",
-      region: "Central Visayas",
-      country: "Philippines"
-    },
-    timeInstalled: "2025-06-15T09:30:00.000Z",
-    status: "inactive",
-    createdBy: "superadmin",
-    updatedBy: "superadmin",
-    createdAt: "2025-07-04T00:22:18.251Z",
-    updatedAt: "2025-07-04T00:22:18.251Z",
-  },
-  {
-    _id: "68671e4ababf10848c8f9c63",
-    solarPumpNumber: 3,
-    model: "SPX-1800",
-    power: "1.8kW",
-    acInputVoltage: "220V",
-    pvOperatingVoltage: "210V",
-    openCircuitVoltage: "250V",
-    outlet: "2 inch",
-    maxHead: "38m",
-    maxFlow: "12m3/h",
-    solarPanelConfig: "7x300W",
-    lat: 7.1907,
-    lng: 125.4553,
-    address: {
-      barangay: "Poblacion",
-      municipality: "Davao City",
-      region: "Davao Region",
-      country: "Philippines"
-    },
-    timeInstalled: "2025-06-20T10:15:00.000Z",
-    status: "warning",
-    createdBy: "superadmin",
-    updatedBy: "superadmin",
-    createdAt: "2025-07-04T00:25:44.192Z",
-    updatedAt: "2025-07-04T00:25:44.192Z",
-  }
-];
+import { pumpService } from '../services/pumpService';
+import { toast } from 'react-toastify';
+import { convertToCSV, downloadCSV } from '../utils/csvExport';
+import '../styles/pump-management.css';
 
 const PumpManagement = () => {
   const { dashboardSettings } = useContext(DashboardContext);
-  const [pumps, setPumps] = useState(SAMPLE_PUMPS);
+  const [pumps, setPumps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [searchType, setSearchType] = useState('all');
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0
+  });
   
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedPump, setSelectedPump] = useState(null);
+  
+  // Current date and time
+  const currentDateTime = dashboardSettings?.currentDateTime || "2025-07-09 06:12:00";
+  const currentUser = dashboardSettings?.currentUser || "Dextiee";
 
-  // Filtered pumps based on search query and status filter
-  const filteredPumps = pumps.filter(pump => {
-    const matchesSearch = 
-      pump.solarPumpNumber.toString().includes(searchQuery) ||
-      pump.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pump.address.municipality.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pump.address.region.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || pump.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    fetchPumps();
+  }, [pagination.page, pagination.limit, statusFilter]);
 
-  // Handlers for pump operations
-  const handleAddPump = (newPump) => {
-    // This would be an API call in a real implementation
-    console.log('Adding new pump:', newPump);
-    const pumpWithId = { 
-      ...newPump, 
-      _id: `temp-${Date.now()}`,
-      createdBy: dashboardSettings.currentUser,
-      updatedBy: dashboardSettings.currentUser,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    setPumps([...pumps, pumpWithId]);
-    setShowAddModal(false);
+  const fetchPumps = async (searchOverride = null) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const filters = {};
+      const currentSearch = searchOverride !== null ? searchOverride : searchQuery;
+      
+      if (currentSearch) {
+        filters.search = currentSearch;
+        
+        if (searchType === 'model' || searchType === 'all') {
+          filters.model = currentSearch;
+        }
+        
+        if (searchType === 'location' || searchType === 'all') {
+          filters['address.municipality'] = currentSearch;
+          filters['address.region'] = currentSearch;
+        }
+        
+        if (searchType === 'number' || searchType === 'all') {
+          if (!isNaN(parseInt(currentSearch))) {
+            filters.solarPumpNumber = parseInt(currentSearch);
+          }
+        }
+      }
+      
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+      
+      const response = await pumpService.getAllPumps(
+        pagination.page,
+        pagination.limit,
+        filters
+      );
+      
+      setPumps(response.data);
+      setPagination({
+        ...pagination,
+        total: response.total
+      });
+    } catch (err) {
+      console.error('Error fetching pumps:', err);
+      setError('Failed to load pumps. Please try again later.');
+      toast.error('Failed to load pumps');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const exportToCSV = async () => {
+    try {
+      setExporting(true);
+      
+      const filters = {};
+      
+      if (searchQuery) {
+        filters.search = searchQuery;
+        
+        if (searchType === 'model' || searchType === 'all') {
+          filters.model = searchQuery;
+        }
+        
+        if (searchType === 'location' || searchType === 'all') {
+          filters['address.municipality'] = searchQuery;
+          filters['address.region'] = searchQuery;
+        }
+        
+        if (searchType === 'number' || searchType === 'all') {
+          if (!isNaN(parseInt(searchQuery))) {
+            filters.solarPumpNumber = parseInt(searchQuery);
+          }
+        }
+      }
+      
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+      
+      const response = await pumpService.exportPumpsToCSV(filters);
+      
+      if (!response.data || response.data.length === 0) {
+        toast.warning('No data to export');
+        return;
+      }
+      
+      const columns = [
+        { key: 'solarPumpNumber', header: 'Pump Number' },
+        { key: 'model', header: 'Model' },
+        { key: 'power', header: 'Power' },
+        { key: 'address.municipality', header: 'Municipality' },
+        { key: 'address.region', header: 'Region' },
+        { key: 'lat', header: 'Latitude' },
+        { key: 'lng', header: 'Longitude' },
+        { key: 'timeInstalled', header: 'Installation Date', type: 'date' },
+        { key: 'status', header: 'Status' },
+        { key: 'createdBy', header: 'Created By' },
+        { key: 'updatedAt', header: 'Last Updated', type: 'date' }
+      ];
+      
+      const csvContent = convertToCSV(response.data, columns);
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `solar_pumps_export_${date}.csv`;
+      
+      downloadCSV(csvContent, filename);
+      toast.success(`Exported ${response.data.length} records to CSV`);
+    } catch (err) {
+      toast.error('Failed to export data');
+    } finally {
+      setExporting(false);
+    }
   };
 
-  const handleEditPump = (updatedPump) => {
-    // This would be an API call in a real implementation
-    console.log('Updating pump:', updatedPump);
-    const updatedPumps = pumps.map(pump => 
-      pump._id === updatedPump._id ? { ...updatedPump, updatedBy: dashboardSettings.currentUser, updatedAt: new Date().toISOString() } : pump
-    );
-    setPumps(updatedPumps);
-    setShowEditModal(false);
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleSearch = () => {
+    setPagination({...pagination, page: 1});
+    fetchPumps(searchQuery);
+  };
+  
+  const handleAddPump = async (newPump) => {
+    try {
+      setLoading(true);
+      await pumpService.addPump(newPump);
+      toast.success('Pump added successfully!');
+      setShowAddModal(false);
+      fetchPumps();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add pump');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeletePump = () => {
-    // This would be an API call in a real implementation
+  const handleEditPump = async (updatedPump) => {
+    try {
+      setLoading(true);
+      await pumpService.updatePump(updatedPump._id, updatedPump);
+      toast.success('Pump updated successfully!');
+      setShowEditModal(false);
+      fetchPumps();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update pump');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeletePump = async () => {
     if (!selectedPump) return;
-    console.log('Deleting pump:', selectedPump._id);
-    const updatedPumps = pumps.filter(pump => pump._id !== selectedPump._id);
-    setPumps(updatedPumps);
-    setShowDeleteModal(false);
-    setSelectedPump(null);
+    try {
+      setLoading(true);
+      await pumpService.deletePump(selectedPump._id);
+      toast.success('Pump deleted successfully!');
+      setShowDeleteModal(false);
+      setSelectedPump(null);
+      fetchPumps();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete pump');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const openEditModal = (pump) => {
-    setSelectedPump(pump);
-    setShowEditModal(true);
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setSearchType('all');
+    setPagination({...pagination, page: 1});
+    fetchPumps('');
   };
 
-  const openDeleteModal = (pump) => {
-    setSelectedPump(pump);
-    setShowDeleteModal(true);
+  // Generate model icon/avatar
+  const getPumpModelAvatar = (model) => {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F06595', '#748CAB', '#6A0572'];
+    const index = model.charCodeAt(0) % colors.length;
+    const modelPrefix = model.split('-')[0]; // Get the prefix (SPX)
+    
+    return (
+      <div className="pump-avatar" style={{ backgroundColor: colors[index] }}>
+        {modelPrefix}
+      </div>
+    );
   };
-
+  
   // Render status badge
   const renderStatusBadge = (status) => {
-    const badgeClass = `status-badge status-${status}`;
-    return <span className={badgeClass}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>;
+    let badgeClass = 'status-badge';
+    
+    switch (status) {
+      case 'active':
+        badgeClass += ' status-active';
+        break;
+      case 'inactive':
+        badgeClass += ' status-inactive';
+        break;
+      case 'maintenance':
+        badgeClass += ' status-warning';
+        break;
+    }
+    
+    return (
+      <div className={badgeClass}>
+        <span className="status-indicator"></span>
+        <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+      </div>
+    );
+  };
+
+  // Format power nicely
+  const formatPower = (power) => {
+    if (!power) return 'N/A';
+    
+    // If it already has kW, return as is
+    if (power.toString().includes('kW')) return power;
+    
+    // Otherwise add kW
+    return `${power}kW`;
   };
 
   return (
-    <Container fluid className="pump-management">
-      <Row className="mb-3">
-        <Col>
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h4 className="mb-1">Solar Pump Management</h4>
-              <p className="text-muted mb-0">Add, edit, and manage solar water pumps</p>
-            </div>
-            <div className="d-flex align-items-center">
-              <span className="text-muted me-3">
-                {dashboardSettings.currentUser} | {dashboardSettings.currentDateTime}
-              </span>
-              <Button 
-                variant="primary" 
-                onClick={() => setShowAddModal(true)}
-                className="add-pump-btn"
-              >
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
-                Add New Pump
-              </Button>
-            </div>
+    <div className="dashboard-container">
+      {/* Header section */}
+      <div className="header-panel">
+        <div className="title-section">
+          <h1>Solar Pump Management</h1>
+          <p>Add, edit, and manage solar water pumps</p>
+        </div>
+        <div className="user-info">
+          <span className="time-display">{currentDateTime}</span>
+          <div className="current-user">
+            <div className="user-avatar current">{currentUser.substring(0, 2).toUpperCase()}</div>
+            <span>{currentUser}</span>
           </div>
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
-        <Col md={6}>
-          <InputGroup>
-            <InputGroup.Text className="search-icon">
-              <FontAwesomeIcon icon={faSearch} />
-            </InputGroup.Text>
-            <Form.Control
-              placeholder="Search by pump number, model, or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </InputGroup>
-        </Col>
-        <Col md={6}>
-          <div className="d-flex justify-content-end">
-            <InputGroup className="w-50">
-              <InputGroup.Text className="filter-icon">
-                <FontAwesomeIcon icon={faFilter} />
-              </InputGroup.Text>
-              <Form.Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="warning">Warning</option>
-              </Form.Select>
-            </InputGroup>
-          </div>
-        </Col>
-      </Row>
-
-      <div className="pump-table-container visible-table">
-        <Table responsive hover className="pump-table">
-          <thead>
-            <tr>
-              <th>Pump #</th>
-              <th>Model</th>
-              <th>Power</th>
-              <th>Location</th>
-              <th>Installation Date</th>
-              <th>Status</th>
-              <th className="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPumps.length > 0 ? (
-              filteredPumps.map((pump) => (
-                <tr key={pump._id}>
-                  <td className="pump-number">{pump.solarPumpNumber}</td>
-                  <td className="pump-model">{pump.model}</td>
-                  <td className="pump-power">{pump.power}</td>
-                  <td className="pump-location">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="location-icon me-1" />
-                    <span>{pump.address.municipality}, {pump.address.region}</span>
-                  </td>
-                  <td className="pump-date">{new Date(pump.timeInstalled).toLocaleDateString()}</td>
-                  <td className="pump-status">{renderStatusBadge(pump.status)}</td>
-                  <td className="pump-actions">
-                    <div className="d-flex justify-content-center gap-2">
-                      <Button 
-                        variant="outline-primary" 
-                        size="sm"
-                        onClick={() => openEditModal(pump)}
-                        className="action-btn edit-btn"
-                      >
-                        <FontAwesomeIcon icon={faPencilAlt} />
-                      </Button>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm"
-                        onClick={() => openDeleteModal(pump)}
-                        className="action-btn delete-btn"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center py-4 no-results">
-                  No pumps found matching your search criteria.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+        </div>
       </div>
-
+      
+      {/* Action buttons */}
+      <div className="action-panel">
+        <div className="search-section">
+          <div className="search-box">
+            <FontAwesomeIcon icon={faSearch} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search pumps..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            />
+          </div>
+          <Dropdown className="search-type-dropdown">
+            <Dropdown.Toggle variant="dark" id="search-type-dropdown">
+              {searchType === 'all' ? 'All Fields' : 
+               searchType === 'number' ? 'Pump #' :
+               searchType === 'model' ? 'Model' : 'Location'}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => setSearchType('all')} active={searchType === 'all'}>
+                All Fields
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setSearchType('number')} active={searchType === 'number'}>
+                Pump #
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setSearchType('model')} active={searchType === 'model'}>
+                Model
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setSearchType('location')} active={searchType === 'location'}>
+                Location
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <button className="btn-search" onClick={handleSearch}>Search</button>
+        </div>
+        <div className="filter-section">
+          <Dropdown>
+            <Dropdown.Toggle variant="dark" id="filter-dropdown" className="filter-toggle">
+              <FontAwesomeIcon icon={faFilter} className="filter-icon" />
+              {statusFilter === 'all' ? 'All Statuses' : 
+               statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="filter-menu">
+              <Dropdown.Item 
+                className={statusFilter === 'all' ? 'active' : ''}
+                onClick={() => setStatusFilter('all')}
+              >
+                All Statuses
+              </Dropdown.Item>
+              <Dropdown.Item 
+                className={statusFilter === 'active' ? 'active' : ''}
+                onClick={() => setStatusFilter('active')}
+              >
+                <span className="dropdown-status-dot active"></span>
+                Active
+              </Dropdown.Item>
+              <Dropdown.Item 
+                className={statusFilter === 'inactive' ? 'active' : ''}
+                onClick={() => setStatusFilter('inactive')}
+              >
+                <span className="dropdown-status-dot inactive"></span>
+                Inactive
+              </Dropdown.Item>
+              <Dropdown.Item 
+                className={statusFilter === 'maintenance' ? 'active' : ''}
+                onClick={() => setStatusFilter('maintenance')}
+              >
+                <span className="dropdown-status-dot maintenance"></span>
+                maintenance
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <button 
+            className="btn-refresh" 
+            onClick={() => fetchPumps()}
+            title="Refresh pump data"
+          >
+            <FontAwesomeIcon icon={faSync} />
+          </button>
+          <button 
+            className={`btn-export ${(exporting || loading || pumps.length === 0) ? 'disabled' : ''}`}
+            onClick={exportToCSV}
+            disabled={exporting || loading || pumps.length === 0}
+          >
+            {exporting ? (
+              <>
+                <FontAwesomeIcon icon={faSpinner} spin />
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faFileCsv} />
+                <span>Export CSV</span>
+              </>
+            )}
+          </button>
+          <button className="btn-add" onClick={() => setShowAddModal(true)}>
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Add Pump</span>
+          </button>
+        </div>
+      </div>
+      
+      {/* Main content area */}
+      <div className="data-panel">
+        {loading ? (
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Loading pumps...</p>
+          </div>
+        ) : error ? (
+          <div className="error-message">
+            <FontAwesomeIcon icon={faInfoCircle} className="error-icon" />
+            <p>{error}</p>
+            <button onClick={() => fetchPumps()}>Try Again</button>
+          </div>
+        ) : (
+          <>
+            <div className="pumps-table">
+              <div className="table-header">
+                <div className="th th-number">PUMP #</div>
+                <div className="th th-model">MODEL</div>
+                <div className="th th-power">POWER</div>
+                <div className="th th-location">LOCATION</div>
+                <div className="th th-date">INSTALLED</div>
+                <div className="th th-status">STATUS</div>
+                <div className="th th-actions">ACTIONS</div>
+              </div>
+              
+              <div className="table-body">
+                {pumps.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-icon">🔍</div>
+                    <h3>No pumps found</h3>
+                    <p>Try adjusting your search or filters</p>
+                    {(searchQuery || statusFilter !== 'all') && (
+                      <button className="btn-clear" onClick={handleClearSearch}>
+                        Clear Search & Filters
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  pumps.map((pump) => (
+                    <div className="table-row" key={pump._id}>
+                      <div className="td td-number">
+                        <div className="pump-number-badge">
+                          {pump.solarPumpNumber}
+                        </div>
+                      </div>
+                      <div className="td td-model">
+                        <div className="model-info">
+                          {getPumpModelAvatar(pump.model)}
+                          <span className="model-name">{pump.model}</span>
+                        </div>
+                      </div>
+                      <div className="td td-power">
+                        <div className="power-badge">
+                          <FontAwesomeIcon icon={faBolt} />
+                          <span>{formatPower(pump.power)}</span>
+                        </div>
+                      </div>
+                      <div className="td td-location">
+                        <div className="location-container">
+                          <div className="location-pin">
+                            <FontAwesomeIcon icon={faMapMarkerAlt} />
+                          </div>
+                          <div className="location-details">
+                            <span className="location-municipality">
+                              {pump.address?.municipality || 'Unknown'}
+                            </span>
+                            <span className="location-region">
+                              {pump.address?.region || 'Unknown'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="td td-date">
+                        <div className="date-container">
+                          <FontAwesomeIcon icon={faCalendarAlt} />
+                          <span>{new Date(pump.timeInstalled).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div className="td td-status">
+                        {renderStatusBadge(pump.status)}
+                      </div>
+                      <div className="td td-actions">
+                        <button 
+                          className="btn-action btn-edit" 
+                          onClick={() => {
+                            setSelectedPump(pump);
+                            setShowEditModal(true);
+                          }}
+                          title="Edit Pump"
+                        >
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button 
+                          className="btn-action btn-delete" 
+                          onClick={() => {
+                            setSelectedPump(pump);
+                            setShowDeleteModal(true);
+                          }}
+                          title="Delete Pump"
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+            
+            {pumps.length > 0 && (
+              <div className="pagination-controls">
+                <div className="showing-info">
+                  Showing {pumps.length} of {pagination.total} pumps
+                </div>
+                <div className="pagination">
+                  <button 
+                    className="page-btn prev" 
+                    disabled={pagination.page === 1}
+                    onClick={() => setPagination({...pagination, page: pagination.page - 1})}
+                  >
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                  </button>
+                  
+                  <span className="current-page">
+                    Page <span className="page-number">{pagination.page}</span> of <span className="page-count">{Math.ceil(pagination.total / pagination.limit) || 1}</span>
+                  </span>
+                  
+                  <button 
+                    className="page-btn next" 
+                    disabled={pagination.page >= Math.ceil(pagination.total / pagination.limit)}
+                    onClick={() => setPagination({...pagination, page: pagination.page + 1})}
+                  >
+                    <FontAwesomeIcon icon={faChevronRight} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      
       {/* Modals */}
       <AddPumpModal 
         show={showAddModal} 
@@ -309,11 +547,14 @@ const PumpManagement = () => {
         <DeletePumpModal
           show={showDeleteModal}
           handleClose={() => setShowDeleteModal(false)}
-          handleDelete={handleDeletePump}
+          onDeleteSuccess={() => {
+            setSelectedPump(null);
+            fetchPumps();
+          }}
           pump={selectedPump}
         />
       )}
-    </Container>
+    </div>
   );
 };
 

@@ -1,0 +1,44 @@
+/* Fixes for components inside sliding panels */
+
+/* Remove the default dashboard-card from components */
+.panel-content .dashboard-card {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 0;
+    height: auto;
+}
+
+/* Remove the title from each component since we have tab navigation */
+.panel-content .solar-stats-header h5,
+.panel-content .weather-header h5,
+.panel-content .performance-chart h5:first-child,
+.panel-content .monthly-generation h5:first-child {
+    display: none;
+}
+
+/* Fix scrolling on panels */
+.panel-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Adjust components spacing */
+.panel-content .solar-stats-card,
+.panel-content .weather-card {
+    margin-top: 0;
+    height: 100%;
+}
+
+/* Keep refresh buttons */
+.panel-content .btn-refresh {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+/* Fix metric cards layout */
+.panel-content .weather-metrics {
+    grid-template-columns: 1fr 1fr; }

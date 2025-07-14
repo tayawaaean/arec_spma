@@ -1,0 +1,136 @@
+/* CSS for Water Pumped and Savings Containers */
+
+/* Common container styles */
+.water-pumped-container,
+.savings-container {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    height: 100%;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.water-pumped-container:hover,
+.savings-container:hover {
+    background: rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+}
+
+.container-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.header-icon {
+    color: #38bdf8;
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.container-content {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* Water Pumped specific styles */
+.water-pumped-container .container-content {
+    justify-content: space-around;
+}
+
+.metric-block {
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #e2e8f0;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* Savings specific styles */
+.savings-container .container-content {
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.saving-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.saving-row:last-child {
+    margin-bottom: 0;
+}
+
+.saving-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.gasoline-icon {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.diesel-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+}
+
+.electric-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.saving-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-right: 1rem;
+    min-width: 80px;
+}
+
+.saving-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+    .water-pumped-container,
+    .savings-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .container-content {
+        flex-direction: column;
+    }
+
+    .metric-block {
+        margin-bottom: 1rem;
+    }
+
+    .metric-block:last-child {
+        margin-bottom: 0;
+    }
+}

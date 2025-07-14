@@ -2,36 +2,18 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Nav } from 'react-bootstrap';
 import MapView from '../components/map/MapView';
 import PumpOverview from '../components/map/PumpOverview';
-import PumpModels from '../components/map/PumpModels';
 import WeatherConditions from '../components/map/WeatherConditions';
 import RecentActivity from '../components/map/RecentActivity';
 import MapHeader from '../components/map/MapHeader';
 import StatusFilter from '../components/map/StatusFilter';
-
-// Import the utilities and data
-import { 
-  solarPumps, 
-  calculateTotalPower, 
-  countPumpsByStatus, 
-  groupPumpsByModel, 
-  countTotalPanels 
-} from '../utils/solarPumpData';
-
-import { APP_INFO } from '../utils/constants';
+import { AuthContext } from '../App';
+import { useContext } from 'react';
 
 const MapPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sidebarTab, setSidebarTab] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Use the data from constants
-  const { currentDateTime, currentUser } = APP_INFO;
-  
-  // Get stats using utility functions
-  const totalPower = calculateTotalPower(solarPumps);
-  const pumpsByStatus = countPumpsByStatus(solarPumps);
-  const pumpsByModel = groupPumpsByModel(solarPumps);
-  const totalPanels = countTotalPanels(solarPumps);
+  const { user } = useContext(AuthContext);
   
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -39,7 +21,10 @@ const MapPage = () => {
   
   return (
     <Container fluid className="h-100 pb-3">
-      <MapHeader currentUser={currentUser} currentDateTime={currentDateTime} />
+      <MapHeader 
+        currentUser={user ? user.username : 'Guest'} 
+        currentDateTime={new Date().toISOString().slice(0, 19).replace('T', ' ')} 
+      />
       
       <StatusFilter 
         statusFilter={statusFilter}
@@ -68,14 +53,6 @@ const MapPage = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link 
-                    className={sidebarTab === 'models' ? 'active' : ''} 
-                    onClick={() => setSidebarTab('models')}
-                  >
-                    Models
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link 
                     className={sidebarTab === 'weather' ? 'active' : ''} 
                     onClick={() => setSidebarTab('weather')}
                   >
@@ -85,22 +62,8 @@ const MapPage = () => {
               </Nav>
               
               <div className="tab-content p-3">
-                {sidebarTab === 'overview' && (
-                  <PumpOverview 
-                    totalPower={totalPower}
-                    pumpsByStatus={pumpsByStatus}
-                    totalPumps={solarPumps.length}
-                    totalPanels={totalPanels}
-                  />
-                )}
-                
-                {sidebarTab === 'models' && (
-                  <PumpModels pumpsByModel={pumpsByModel} />
-                )}
-                
-                {sidebarTab === 'weather' && (
-                  <WeatherConditions />
-                )}
+                {sidebarTab === 'overview' && <PumpOverview />}
+                {sidebarTab === 'weather' && <WeatherConditions />}
               </div>
             </Card.Body>
           </Card>

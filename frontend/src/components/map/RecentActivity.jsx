@@ -1,54 +1,115 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import mqtt from 'mqtt';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
-const RecentActivity = () => {
-  // This could come from props or an API in a real app
-  const activities = [
-    {
-      id: 1,
-      pumpNumber: 2,
-      action: 'Status changed to Active',
-      timestamp: '2025-07-08 04:15:33',
-      status: 'active'
-    },
-    {
-      id: 2,
-      pumpNumber: 3,
-      action: 'Maintenance scheduled',
-      timestamp: '2025-07-08 02:45:02',
-      status: 'maintenance'
-    },
-    {
-      id: 3,
-      pumpNumber: 5,
-      action: 'Pump went offline',
-      timestamp: '2025-07-07 18:32:10',
-      status: 'offline'
-    },
-    {
-      id: 4,
-      pumpNumber: null,
-      action: 'Daily pump reports generated',
-      timestamp: '2025-07-07 00:00:01',
-      status: 'info'
-    }
-  ];
+// Helper for status to color mapping
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'active': return 'success';
+    case 'maintenance': return 'warning';
+    case 'inactive': return 'danger';
+    default: return 'info';
+  }
+};
+const getStatusAction = (status) => {
+  switch (status) {
+    case 'active': return 'Status changed to Active';
+    case 'maintenance': return 'Maintenance required';
+    case 'inactive': return 'Pump set to Inactive';
+    default: return `Status changed to ${status}`;
+  }
+};
+const MAX_ACTIVITIES = 3;
+const API_URL = '/api/pumpActivity/recent';
+const MQTT_WS_URL = "ws://mqtt.arecmmsu.com:9001";
+const MQTT_USERNAME = "arec";
+const MQTT_PASSWORD = "arecmqtt";
 
-  // Get status color for activity icon
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return 'success';
-      case 'maintenance': return 'warning';
-      case 'offline': return 'danger';
-      default: return 'info';
+// Example: getToken can be from localStorage, context, etc.
+function getToken() {
+  return localStorage.getItem('token'); // or however you store the token
+}
+
+const RecentActivity = () => {
+  const [activities, setActivities] = useState([]);
+  const mqttClientRef = useRef(null);
+
+  // Fetch recent activities from backend on mount, with Authorization header
+  useEffect(() => {
+    async function fetchRecentActivities() {
+      try {
+        const token = getToken();
+        const response = await fetch(API_URL, {
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) throw new Error('Failed to fetch activities');
+        const data = await response.json();
+        const formatted = data.map(act => ({
+          ...act,
+          id: act._id || act.id,
+          timestamp: act.timestamp
+            ? new Date(act.timestamp).toISOString().slice(0, 19).replace('T', ' ')
+            : '',
+        }));
+        setActivities(formatted.slice(0, MAX_ACTIVITIES));
+      } catch (e) {
+        // Optionally handle fetch error
+      }
     }
-  };
+    fetchRecentActivities();
+  }, []);
+
+  // MQTT subscription for real-time updates
+  useEffect(() => {
+    const client = mqtt.connect(MQTT_WS_URL, {
+      username: MQTT_USERNAME,
+      password: MQTT_PASSWORD,
+      reconnectPeriod: 5000,
+    });
+    mqttClientRef.current = client;
+
+    client.on('connect', () => {
+      client.subscribe('arec/pump/+/operational_status');
+    });
+
+    client.on('message', (topic, message) => {
+      const match = topic.match(/^arec\/pump\/(\d+)\/operational_status$/);
+      if (!match) return;
+      const pumpNumber = parseInt(match[1], 10);
+      const status = message.toString();
+
+      if (!['active', 'maintenance', 'inactive'].includes(status)) return;
+
+      const newActivity = {
+        id: Date.now(),
+        pumpNumber,
+        action: getStatusAction(status),
+        timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        status
+      };
+
+      setActivities(prevActivities => {
+        const updated = [newActivity, ...prevActivities].slice(0, MAX_ACTIVITIES);
+        return updated;
+      });
+    });
+
+    return () => {
+      client.end(true);
+    };
+  }, []);
 
   return (
     <div>
       <h5 className="mb-3">Recent Activity</h5>
       <div className="activity-feed">
+        {activities.length === 0 && (
+          <div className="text-muted small text-center py-3">No recent status changes yet.</div>
+        )}
         {activities.map((activity, index) => (
           <div 
             key={activity.id}

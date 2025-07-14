@@ -1,98 +1,178 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTint, faBolt, faSolarPanel } from '@fortawesome/free-solid-svg-icons';
+import { faChartPie, faBolt, faSolarPanel } from '@fortawesome/free-solid-svg-icons';
+import mqtt from 'mqtt';
+import { calculateTotalPower, countTotalPanels } from '../../utils/solarPumpData';
+import { STATUS_COLORS } from '../../utils/constants';
+import { pumpService } from '../../utils/pumpApi';
 
-const PumpOverview = ({ totalPower, pumpsByStatus, totalPumps, totalPanels }) => {
+const MQTT_WS_URL = "ws://mqtt.arecmmsu.com:9001"; // Replace with your MQTT broker's WebSocket URL
+
+const PumpOverview = () => {
+  const [pumps, setPumps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    totalPower: '0kW',
+    totalPanels: 0,
+    pumpsByStatus: { active: 0, maintenance: 0, inactive: 0 }
+  });
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const mqttClientRef = useRef(null);
+
+  // Count pumps by status
+  const countPumpsByStatus = (pumpList) => {
+    return pumpList.reduce((counts, pump) => {
+      if (pump.status) {
+        counts[pump.status] = (counts[pump.status] || 0) + 1;
+      }
+      return counts;
+    }, { active: 0, maintenance: 0, inactive: 0 });
+  };
+
+  // Fetch pumps meta info ONCE on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await pumpService.getAllPumps({});
+        const pumpData = response.data || [];
+        setPumps(pumpData);
+      } catch (err) {
+        setError('Failed to load pump overview data');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  // MQTT operational status subscription
+  useEffect(() => {
+    if (pumps.length === 0) return;
+
+    const mqttClient = mqtt.connect(MQTT_WS_URL, {
+      username: "arec", // Set if needed
+      password: "arecmqtt", // Set if needed
+      reconnectPeriod: 3000
+    });
+    mqttClientRef.current = mqttClient;
+
+    // Subscribe to all operational_status topics
+    pumps.forEach((pump) => {
+      const topic = `arec/pump/${pump.solarPumpNumber}/operational_status`;
+      mqttClient.subscribe(topic);
+    });
+
+    mqttClient.on('message', (topic, message) => {
+      const match = topic.match(/^arec\/pump\/(\d+)\/operational_status$/);
+      if (!match) return;
+      const pumpNumber = parseInt(match[1], 10);
+      const status = message.toString();
+
+      // Update pump status in state
+      setPumps((prevPumps) =>
+        prevPumps.map((p) =>
+          p.solarPumpNumber === pumpNumber ? { ...p, status } : p
+        )
+      );
+    });
+
+    mqttClient.on('error', (err) => {
+      setError('MQTT connection error: ' + err.message);
+    });
+
+    return () => {
+      mqttClient.end(true);
+    };
+  }, [pumps.length]);
+
+  // Update stats whenever pumps changes
+  useEffect(() => {
+    setStats({
+      totalPower: calculateTotalPower(pumps),
+      totalPanels: countTotalPanels(pumps),
+      pumpsByStatus: countPumpsByStatus(pumps),
+    });
+    setLastUpdate(new Date());
+  }, [pumps]);
+
+  if (loading) {
+    return (
+      <div className="text-center p-4">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-2">Loading pump data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="danger">
+        {error}
+      </Alert>
+    );
+  }
+
+  const activePumps = stats.pumpsByStatus.active || 0;
+  const inactivePumps = stats.pumpsByStatus.inactive || 0;
+  const maintenancePumps = stats.pumpsByStatus.maintenance || 0;
+
   return (
-    <div>
-      <h5 className="mb-3">Solar Pump Overview</h5>
-      <div className="installation-info">
-        <div className="mb-3">
-          <div className="text-muted small">Total Power</div>
-          <div className="h4 mb-0">{totalPower}</div>
+    <>
+      <h6 className="mb-3">
+        <FontAwesomeIcon icon={faChartPie} className="me-2 text-primary" />
+        Pump Status Overview
+      </h6>
+
+      <div className="d-flex justify-content-between mb-3">
+        <div className="text-center">
+          <div className="stat-number text-success">{activePumps}</div>
+          <div className="stat-label">Active</div>
         </div>
-        <hr className="my-3" />
-        <div className="mb-3">
-          <div className="text-muted small mb-2">Pump Status</div>
-          <div className="d-flex justify-content-between mb-2">
-            <div className="d-flex align-items-center">
-              <div className="status-indicator bg-success me-2"></div>
-              <span>Active</span>
-            </div>
-            <div className="d-flex align-items-center">
-              <span className="h5 mb-0">{pumpsByStatus.active || 0}</span>
-            </div>
-          </div>
-          <div className="d-flex justify-content-between mb-2">
-            <div className="d-flex align-items-center">
-              <div className="status-indicator bg-warning me-2"></div>
-              <span>Maintenance</span>
-            </div>
-            <div className="d-flex align-items-center">
-              <span className="h5 mb-0">{pumpsByStatus.maintenance || 0}</span>
-            </div>
-          </div>
-          <div className="d-flex justify-content-between mb-2">
-            <div className="d-flex align-items-center">
-              <div className="status-indicator bg-danger me-2"></div>
-              <span>Offline</span>
-            </div>
-            <div className="d-flex align-items-center">
-              <span className="h5 mb-0">{pumpsByStatus.offline || 0}</span>
-            </div>
-          </div>
-          <div className="progress mt-2" style={{ height: '8px' }}>
-            <div
-              className="progress-bar bg-success"
-              style={{
-                width: `${((pumpsByStatus.active || 0) / totalPumps) * 100}%`
-              }}
-              title="Active"
-            ></div>
-            <div
-              className="progress-bar bg-warning"
-              style={{
-                width: `${((pumpsByStatus.maintenance || 0) / totalPumps) * 100}%`
-              }}
-              title="Maintenance"
-            ></div>
-            <div
-              className="progress-bar bg-danger"
-              style={{
-                width: `${((pumpsByStatus.offline || 0) / totalPumps) * 100}%`
-              }}
-              title="Offline"
-            ></div>
-          </div>
+        <div className="text-center">
+          <div className="stat-number text-warning">{maintenancePumps}</div>
+          <div className="stat-label">Maintenance</div>
+        </div>
+        <div className="text-center">
+          <div className="stat-number text-danger">{inactivePumps}</div>
+          <div className="stat-label">Inactive</div>
         </div>
       </div>
-      
-      {/* Flow metrics */}
-      <div className="mt-4">
-        <h6 className="text-muted mb-2">Performance Metrics</h6>
-        <div className="d-flex justify-content-between mb-2">
+
+      <hr className="my-3" />
+
+      <Row className="small-stats">
+        <Col xs={6} className="mb-3">
           <div className="d-flex align-items-center">
-            <FontAwesomeIcon icon={faTint} className="text-info me-2" />
-            <span>Max Flow Rate</span>
+            <div className="stat-icon bg-primary-soft">
+              <FontAwesomeIcon icon={faBolt} className="text-primary" />
+            </div>
+            <div className="ms-2">
+              <div className="stat-value">{stats.totalPower}</div>
+              <div className="stat-label">Total Power</div>
+            </div>
           </div>
-          <span>50m³/h</span>
-        </div>
-        <div className="d-flex justify-content-between mb-2">
+        </Col>
+        <Col xs={6} className="mb-3">
           <div className="d-flex align-items-center">
-            <FontAwesomeIcon icon={faBolt} className="text-warning me-2" />
-            <span>Total Panel Power</span>
+            <div className="stat-icon bg-info-soft">
+              <FontAwesomeIcon icon={faSolarPanel} className="text-info" />
+            </div>
+            <div className="ms-2">
+              <div className="stat-value">{stats.totalPanels}</div>
+              <div className="stat-label">Solar Panels</div>
+            </div>
           </div>
-          <span>9.0kW</span>
-        </div>
-        <div className="d-flex justify-content-between mb-2">
-          <div className="d-flex align-items-center">
-            <FontAwesomeIcon icon={faSolarPanel} className="text-primary me-2" />
-            <span>Solar Panels</span>
-          </div>
-          <span>{totalPanels} panels</span>
-        </div>
+        </Col>
+      </Row>
+
+      <div className="text-center mt-3">
+        <small className="text-muted">
+          Last updated: {lastUpdate ? lastUpdate.toLocaleTimeString() : ""}
+        </small>
       </div>
-    </div>
+    </>
   );
 };
 

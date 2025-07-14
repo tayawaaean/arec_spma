@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Container, Form, Button, Card, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Card, Row, Col, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock, faSignInAlt, faSun } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../utils/api';
 import '../styles/login.css';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [credentials, setCredentials] = useState({
     username: '',
     password: '',
@@ -50,8 +51,7 @@ const Login = () => {
     return newErrors;
   };
 
-  // Inside your Login component, modify the handleSubmit function:
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const newErrors = validate();
@@ -63,31 +63,54 @@ const handleSubmit = async (e) => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the API to log in
+      const response = await authService.login(
+        credentials.username, 
+        credentials.password
+      );
       
-      // For demo purposes only - in real app, you'd validate against your backend
-      if (credentials.username === 'admin' && credentials.password === 'password') {
-        // Success - set auth and notify app component
-        localStorage.setItem('isAuthenticated', 'true');
-        
-        // Trigger auth change event
-        window.dispatchEvent(new Event('authChange'));
-        
-        // Directly update parent state if prop exists
-        if (props.setIsAuthenticated) {
-          props.setIsAuthenticated(true);
-        }
-        
-        // Navigate to dashboard
-        navigate('/dashboard');
-      } else {
-        // Failed login
-        setLoginError('Invalid username or password');
+      // Get the token and user info from the response
+      const { token, user } = response;
+      
+      // Store auth data in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      // If remember me is checked, set longer expiry (optional)
+      if (credentials.remember) {
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30); // 30 days
+        localStorage.setItem('tokenExpiry', expiryDate.toISOString());
       }
+      
+      // Update authentication state in parent component
+      if (setIsAuthenticated) {
+        setIsAuthenticated(true);
+      }
+      
+      // Trigger auth change event for other components
+      window.dispatchEvent(new Event('authChange'));
+      
+      // Navigate to dashboard
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      setLoginError('An error occurred during login. Please try again.');
+      
+      // Handle specific API errors
+      if (error.response) {
+        if (error.response.status === 401) {
+          setLoginError('Invalid username or password');
+        } else if (error.response.data?.message) {
+          setLoginError(error.response.data.message);
+        } else {
+          setLoginError('Authentication failed. Please try again.');
+        }
+      } else if (error.request) {
+        setLoginError('Cannot connect to the server. Please check your internet connection.');
+      } else {
+        setLoginError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

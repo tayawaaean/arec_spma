@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import { updateUser, getUserTypes } from '../../utils/userDataSimulator';
+import { userService } from '../../services/userService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faSpinner, faUserEdit, faUser, faShield, faLock
+} from '@fortawesome/free-solid-svg-icons';
+import '../../styles/modal.css';
 
 const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
   const [formData, setFormData] = useState({
@@ -11,7 +16,7 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const userTypes = getUserTypes();
+  const [userTypes, setUserTypes] = useState(['user', 'admin', 'superadmin']);
   
   // Update form when user changes
   useEffect(() => {
@@ -22,6 +27,11 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
       });
     }
   }, [user]);
+  
+  useEffect(() => {
+    // Fetch user types if needed
+    setUserTypes(userService.getUserTypes());
+  }, []);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,18 +80,25 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
         throw new Error('No user selected for editing');
       }
       
-      // Simulate API call with local function
-      const updatedUser = updateUser(user.id, formData);
+      // Call actual API endpoint
+      await userService.updateUser(user._id, formData);
       
-      if (updatedUser) {
-        onUserUpdated();
-        onHide();
-      } else {
-        throw new Error('Failed to update user');
-      }
+      onUserUpdated();
+      onHide();
     } catch (error) {
       console.error('Error updating user:', error);
-      setSubmitError('Error updating user. Please try again.');
+      
+      // Handle different error types
+      if (error.response) {
+        // Server responded with an error status
+        if (error.response.status === 409) {
+          setSubmitError('Username already exists. Please try a different username.');
+        } else {
+          setSubmitError(error.response.data?.message || 'Error updating user. Please try again.');
+        }
+      } else {
+        setSubmitError('Error connecting to server. Please try again later.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -102,27 +119,30 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
       backdrop="static"
       keyboard={false}
       centered
+      className="custom-modal"
     >
-      <Modal.Header style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)' }}>
-        <Modal.Title style={{ color: 'var(--text-primary)' }}>Edit User</Modal.Title>
+      <Modal.Header>
+        <Modal.Title>
+          <FontAwesomeIcon icon={faUserEdit} className="me-2 text-primary" />
+          Edit User
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ background: 'var(--card-bg)', color: 'var(--text-primary)' }}>
+      <Modal.Body>
         {submitError && <Alert variant="danger">{submitError}</Alert>}
         
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>
+              <FontAwesomeIcon icon={faUser} className="me-2 text-primary" />
+              Username
+            </Form.Label>
             <Form.Control
               type="text"
               name="username"
               value={formData.username}
               onChange={handleChange}
               isInvalid={!!errors.username}
-              style={{ 
-                background: 'var(--filter-bg)', 
-                color: 'var(--text-primary)', 
-                borderColor: errors.username ? 'var(--danger)' : 'var(--filter-border)'
-              }}
+              placeholder="Enter username"
             />
             {errors.username && (
               <Form.Text className="text-danger">{errors.username}</Form.Text>
@@ -130,17 +150,15 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
           </Form.Group>
           
           <Form.Group className="mb-3">
-            <Form.Label>User Type</Form.Label>
+            <Form.Label>
+              <FontAwesomeIcon icon={faShield} className="me-2 text-primary" />
+              User Type
+            </Form.Label>
             <Form.Select
               name="userType"
               value={formData.userType}
               onChange={handleChange}
               isInvalid={!!errors.userType}
-              style={{ 
-                background: 'var(--filter-bg)', 
-                color: 'var(--text-primary)', 
-                borderColor: errors.userType ? 'var(--danger)' : 'var(--filter-border)'
-              }}
             >
               {userTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -151,22 +169,19 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
             )}
           </Form.Group>
           
-          <Form.Group className="mb-3">
-            <Form.Text className="text-muted">
+          <div className="info-box mb-3">
+            <FontAwesomeIcon icon={faLock} className="me-2 text-warning" />
+            <span className="text-muted">
               Note: To change a user's password, please use the "Reset Password" function.
-            </Form.Text>
-          </Form.Group>
+            </span>
+          </div>
         </Form>
       </Modal.Body>
-      <Modal.Footer style={{ background: 'var(--card-bg)', borderTop: '1px solid var(--card-border)' }}>
+      <Modal.Footer>
         <Button 
           variant="outline-secondary" 
           onClick={handleCancel}
-          style={{ 
-            background: 'var(--filter-bg)', 
-            color: 'var(--text-primary)', 
-            borderColor: 'var(--filter-border)'
-          }}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>
@@ -174,12 +189,13 @@ const EditUserModal = ({ show, onHide, user, onUserUpdated }) => {
           variant="primary" 
           onClick={handleSubmit}
           disabled={isSubmitting}
-          style={{ 
-            background: 'var(--blue-accent)', 
-            borderColor: 'var(--blue-accent)'
-          }}
         >
-          {isSubmitting ? 'Updating...' : 'Update User'}
+          {isSubmitting ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} spin className="me-2 spin-icon" />
+              Updating...
+            </>
+          ) : 'Update User'}
         </Button>
       </Modal.Footer>
     </Modal>

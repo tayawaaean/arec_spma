@@ -10,34 +10,45 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import PumpDetails from './pages/PumpDetails';
 import PumpManagement from './pages/PumpManagement';
+import { authService } from './utils/api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'leaflet/dist/leaflet.css'; 
-import './styles/custom.css';
 import './styles/login.css';
 import './styles/dashboard.css';
 import './styles/pump-table.css';
 import './styles/modal-dark.css';
 import './styles/data-analysis.css';
-import './styles/data-analysis.css'; // Add this new import
+import './styles/sidebar.css';
+import './styles/component-panel-fixes.css';
+import './styles/custom.css';
 
 // Create Dashboard Context for shared state
 export const DashboardContext = createContext();
+// Create Auth Context for user details
+export const AuthContext = createContext();
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
+  const [isAuthenticated, setIsAuthenticated] = useState(authService.isAuthenticated());
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
   const [dashboardSettings, setDashboardSettings] = useState({
     timeRange: 'month',
     refreshInterval: 30, // seconds
     lastRefreshed: new Date(),
-    currentUser: 'DextieeThese', // Updated username
-    currentDateTime: '2025-07-08 07:36:31' // Updated current date and time
+    currentDateTime: new Date().toISOString().slice(0, 19).replace('T', ' ')
   });
   
-  // Listen for changes to localStorage
+  // Listen for changes to authentication
   useEffect(() => {
     const checkAuth = () => {
-      const auth = localStorage.getItem('isAuthenticated') === 'true';
+      const auth = authService.isAuthenticated();
       setIsAuthenticated(auth);
+      
+      const savedUser = localStorage.getItem('user');
+      setUser(savedUser ? JSON.parse(savedUser) : null);
     };
     
     // Check immediately and also set up event listener
@@ -55,49 +66,69 @@ function App() {
     };
   }, []);
 
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDashboardSettings(prev => ({
+        ...prev,
+        currentDateTime: new Date().toISOString().slice(0, 19).replace('T', ' ')
+      }));
+    }, 60000);
+    
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <Router>
-      {isAuthenticated ? (
-        <DashboardContext.Provider value={{ dashboardSettings, setDashboardSettings }}>
-          <div className="app-container d-flex">
-            <Sidebar />
-            <div className="content-wrapper">
-              <Header />
-              <main className="main-content p-3">
-                <Routes>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/map" element={<MapPage />} />
-                  <Route path="/datas" element={<DataPage />} />
-                  <Route path="/pumps" element={<PumpManagement />} />
-                  <Route path="/pumps/:id" element={<PumpDetails />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/logout" element={
-                    <LogoutHandler setIsAuthenticated={setIsAuthenticated} />
-                  } />
-                  <Route path="/" element={<Navigate replace to="/dashboard" />} />
-                  <Route path="*" element={<Navigate replace to="/dashboard" />} />
-                </Routes>
-              </main>
+      <AuthContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated }}>
+        {isAuthenticated ? (
+          <DashboardContext.Provider value={{ 
+            dashboardSettings, 
+            setDashboardSettings,
+            currentUser: user ? user.username : 'Guest'
+          }}>
+            <div className="app-container d-flex">
+              <Sidebar />
+              <div className="content-wrapper">
+                <Header />
+                <main className="main-content p-3">
+                  <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/map" element={<MapPage />} />
+                    <Route path="/datas" element={<DataPage />} />
+                    <Route path="/pumps" element={<PumpManagement />} />
+                    <Route path="/pumps/:id" element={<PumpDetails />} />
+                    {/* Only allow access to Users page for admin and superadmin */}
+                    {user && ['admin', 'superadmin'].includes(user.userType) && (
+                      <Route path="/users" element={<Users />} />
+                    )}
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/logout" element={
+                      <LogoutHandler />
+                    } />
+                    <Route path="/" element={<Navigate replace to="/dashboard" />} />
+                    <Route path="*" element={<Navigate replace to="/dashboard" />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        </DashboardContext.Provider>
-      ) : (
-        <Routes>
-          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="*" element={<Navigate replace to="/login" />} />
-        </Routes>
-      )}
+          </DashboardContext.Provider>
+        ) : (
+          <Routes>
+            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="*" element={<Navigate replace to="/login" />} />
+          </Routes>
+        )}
+      </AuthContext.Provider>
     </Router>
   );
 }
 
 // Helper component to handle logout
-function LogoutHandler({ setIsAuthenticated }) {
+function LogoutHandler() {
   React.useEffect(() => {
-    localStorage.removeItem('isAuthenticated');
-    setIsAuthenticated(false);
-  }, [setIsAuthenticated]);
+    authService.logout();
+  }, []);
   return <div>Logging out...</div>;
 }
 
